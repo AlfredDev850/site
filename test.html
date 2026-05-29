@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test d'Aptitude - WORLD VERTEX</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;900&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <!-- Librairie de capture d'écran pour télécharger la carte en PNG -->
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #040816;
+      color: white;
+      overflow-x: hidden;
+      padding: 40px 20px;
+    }
+
+    /* FOND SPATIAL */
+    .space {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+
+      background:
+        radial-gradient(circle at top left,#071f4e,transparent 35%),
+        radial-gradient(circle at bottom right,#34004f,transparent 35%),
+        linear-gradient(to bottom,#03050f,#07101f,#02030a);
+      overflow: hidden;
+    }
+
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: url('https://i.imgur.com/YKY28eT.png');
+      opacity: 0.35;
+      animation: starsMove 150s linear infinite;
+    }
+
+    @keyframes starsMove {
+      from { transform: translateY(0); }
+      to { transform: translateY(-2000px); }
+    }
+
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: white;
+      opacity: 0.6;
+      animation: particleMove linear infinite;
+    }
+
+    @keyframes particleMove {
+      from { transform: translateY(100vh) scale(0); opacity: 0; }
+      to { transform: translateY(-100vh) scale(1.5); opacity: 1; }
+    }
+
+    /* CONTENEUR DU TEST TIERS */
+
+    .test-container {
+      max-width: 600px;
+      margin: 60px auto;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 40px;
+      border-radius: 25px;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 40px rgba(0, 229, 255, 0.15);
+    }
+
+    h1.test-title {
+      font-family: 'Orbitron', sans-serif;
+      text-align: center;
+      background: linear-gradient(90deg, #00e5ff, #ff00aa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+
+    }
+
+    .question {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 25px;
+      border-radius: 20px;
+      margin-bottom: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .question p {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+
+    .options label {
+      display: block;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 14px 20px;
+
+      margin-bottom: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .options label:hover {
+      background: rgba(0, 229, 255, 0.15);
+      border-left: 4px solid #00e5ff;
+    }
+
+    .options input {
+      margin-right: 12px;
+    }
+
+    button.action-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(90deg, #00e5ff, #0077ff);
+      border: none;
+
+      border-radius: 15px;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button.action-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 30px #00e5ff;
+    }
+
+    /* CARD DESIGN */
+    #memberCard {
+      width: 420px;
+      margin: 40px auto;
+      padding: 35px;
+      background: rgba(11, 24, 58, 0.4);
+      border-radius: 30px;
+      backdrop-filter: blur(25px);
+
+      border: 1px solid rgba(0, 229, 255, 0.2);
+      box-shadow: 0 0 60px rgba(0, 229, 255, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ARRIÈRE-PLAN SPATIAL -->
+  <div class="space" id="spaceBg">
+    <div class="stars"></div>
+  </div>
+
+  <!-- INTERFACE DYNAMIQUE -->
+  <div id="dynamicContent">
+    <div class="test-container">
+      <h1 class="test-title">TEST TECHNIQUE IA</h1>
+      <p style="text-align:center; 
+
+color:#b0b5c6; margin-bottom:30px;" id="welcomeMessage">Chargement des données candidat...</p>
+
+      <div class="question">
+        <p>Question : Quel composant matériel est le plus optimisé pour l'entraînement intensif des grands modèles de réseaux de neurones (LLM) ?</p>
+        <div class="options">
+          <label><input type="radio" name="ia-quiz" value="A"> A) Le CPU (Processeur central standard)</label>
+          <label><input type="radio" name="ia-quiz" value="B"> B) Le GPU / TPU (Processeurs graphiques et tensoriels parallèles)</label>
+          <label><input type="radio" name="ia-quiz" value="C"> C) Le Disque Dur SSD Externe</label>
+
+        </div>
+      </div>
+
+      <button class="action-btn" onclick="validateQuiz()">Soumettre et Finaliser mon adhésion</button>
+    </div>
+  </div>
+
+<script>
+  // Extraction sécurisée du stockage local
+  const user = JSON.parse(localStorage.getItem("candidateData"));
+  
+  document.addEventListener("DOMContentLoaded", () => {
+    if (!user) {
+      alert("Erreur : Aucun profil détecté. Veuillez d'abord vous inscrire.");
+
+      window.location.href = "index.html";
+      return;
+    }
+    document.getElementById("welcomeMessage").innerText = `Candidat : ${user.name} | Option : ${user.poste}`;
+  });
+
+  // Génération des étoiles cinétiques
+  const spaceBg = document.getElementById("spaceBg");
+  for (let i = 0; i < 100; i++) {
+    let particle = document.createElement("div");
+    particle.classList.add("particle");
+    particle.style.left = Math.random() * 100 + "%";
+    particle.style.width = (Math.random() * 4 + 2) + "px";
+    particle.style.height = 
+
+particle.style.width;
+    particle.style.animationDuration = (Math.random() * 15 + 10) + "s";
+    spaceBg.appendChild(particle);
+  }
+
+  // Soumission et permutation HTML vers la carte membre
+  window.validateQuiz = function() {
+    const checkedOption = document.querySelector('input[name="ia-quiz"]:checked');
+    if (!checkedOption) {
+      alert("Veuillez cocher une réponse avant de continuer.");
+      return;
+    }
+    
+    // Sauvegarde de la validation et redirection vers l'index
+    localStorage.setItem("testPassed", 
+
+"true");
+    window.location.href = "index.html";
+  };
+
+  function generateMemberCard() {
+    const uidGenerated = "WV-" + Math.floor(100000 + Math.random() * 900000);
+
+    document.getElementById("dynamicContent").innerHTML = `
+      <div id="memberCard">
+        <div style="position:absolute; width:300px; height:300px; background:radial-gradient(circle, #00e5ff22, transparent 70%); top:-120px; right:-100px;"></div>
+        
+        <h1 style="font-family:'Orbitron', sans-serif; font-size:30px; text-align:center; 
+
+background:linear-gradient(90deg, #00e5ff, #ff00aa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin:0; letter-spacing:2px;">
+          WORLD VERTEX
+        </h1>
+
+        <div style="text-align:center; margin-top:25px;">
+          <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width:110px; height:110px; border-radius:50%; border:3px solid #00e5ff; box-shadow: 0 0 20px rgba(0,229,255,0.4);">
+        </div>
+
+        <h2 style="text-align:center; margin-top:20px; font-family:'Orbitron', sans-serif; font-size:24px; margin-bottom:5px;">
+          ${user.name}
+        </h2>
+
+
+        <p style="text-align:center; color:#00e5ff; font-size:18px; font-weight:600; margin:0;">
+          ${user.poste}
+        </p>
+
+        <div style="margin-top:25px; line-height:1.9; font-size:15px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+          <p style="margin:4px 0;"><b>Pays :</b> ${user.country}</p>
+          <p style="margin:4px 0;"><b>Email :</b> ${user.email}</p>
+          <p style="margin:4px 0;"><b>ID:</b> ${uidGenerated}</p>
+          <p style="margin:4px 0; color:#00ff9d;"><b>Statut :</b> ACCÈS MEMBRE VALIDE ✔</p>
+        </div>
+
+      </div>
+
+      <div style="max-width:420px; margin:20px auto; display:flex; flex-direction:column; gap:12px;">
+        <button class="action-btn" onclick="window.print()">🖨️ Imprimer la Carte</button>
+        <button class="action-btn" style="background: linear-gradient(90deg, #ff00aa, #0077ff);" onclick="downloadPNG()">📥 Télécharger la Carte en Image</button>
+        <button class="action-btn" style="background:#25D366;" onclick="dispatchWhatsApp('${uidGenerated}')"><i class="fab fa-whatsapp"></i> Recevoir confirmation WhatsApp</button>
+      </div>
+    `;
+
+  }
+
+  window.downloadPNG = function() {
+    const targetCard = document.querySelector("#memberCard");
+    html2canvas(targetCard, { backgroundColor: "#040816", useCORS: true }).then(canvas => {
+      let downloadAnchor = document.createElement("a");
+      downloadAnchor.download = `Carte_WORLD_VERTEX_${user.name.replace(/\s+/g, '_')}.png`;
+      downloadAnchor.href = canvas.toDataURL("image/png");
+      downloadAnchor.click();
+    });
+  };
+
+  window.dispatchWhatsApp = function(idCode) {
+
+    let messageText = `🚀 *WORLD VERTEX TECHNOLOGY* 🚀\n\n` +
+                      `Félicitations *${user.name}*, votre test d'aptitude a été validé avec succès.\n` +
+                      `🔹 *Poste attitré :* ${user.poste}\n` +
+                      `🔹 *Identifiant :* ${idCode}\n` +
+                      `🔹 *Statut :* MEMBRE OFFICIEL ✔\n\n` +
+                      `Votre carte numérique a été générée sur le serveur central.`;
+    
+    let targetLink = "https://wa.me/?text=" + encodeURIComponent(messageText);
+    window.open(targetLink, "_blank");
+  };
+</script>
+
+</body>
+
+</html>
