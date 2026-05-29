@@ -1,0 +1,1027 @@
+<!DOCTYPE html>  
+<html lang="fr">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>WORLD VERTEX | Beyond Human Technology</title>  
+  <meta name="description" content="WORLD VERTEX - Intelligence artificielle, cybersécurité, applications modernes et technologies futuristes.">  
+  <link rel="preconnect" href="https://fonts.googleapis.com">    
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">  
+  <link rel="stylesheet" href="https://
+
+cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">  
+  <style>  
+    /* RESET */  
+    *{  
+      margin:0;  
+      padding:0;  
+      box-sizing:border-box;  
+      scroll-behavior:smooth;  
+    }  
+      
+    body{  
+      font-family:'Poppins',sans-serif;  
+      background:#040816;  
+      color:white;  
+      overflow-x:hidden;  
+    }  
+      
+    /* CURSOR */  
+    .cursor{  
+      width:25px;  
+
+      height:25px;  
+      border:2px solid #00e5ff;  
+      border-radius:50%;  
+      position:fixed;  
+      pointer-events:none;  
+      transform:translate(-50%,-50%);  
+      z-index:999999;  
+      box-shadow:0 0 25px #00e5ff;  
+      transition:0.08s;  
+    }  
+      
+    /* LIGHT */  
+    .light{  
+      position:fixed;  
+      width:500px;  
+      height:500px;  
+      background:radial-gradient(circle, rgba(0,229,255,0.18), transparent 70%);  
+      pointer-events:none;  
+      z-index:-1;  
+      transform:translate(-50%,-50%);  
+
+    }  
+      
+    /* BACKGROUND */  
+    .space{  
+      position:fixed;  
+      top:0;  
+      left:0;  
+      width:100%;  
+      height:100%;  
+      z-index:-10;  
+      background:  
+        radial-gradient(circle at top left,#071f4e,transparent 35%),  
+        radial-gradient(circle at bottom right,#34004f,transparent 35%),  
+        linear-gradient(to bottom,#03050f,#07101f,#02030a);  
+      overflow:hidden;  
+    }  
+      
+    .stars{  
+
+      position:absolute;  
+      width:100%;  
+      height:100%;  
+      background:url('https://i.imgur.com/YKY28eT.png');  
+      opacity:0.35;  
+      animation:starsMove 150s linear infinite;  
+    }  
+      
+    @keyframes starsMove{  
+      from{ transform:translateY(0); }  
+      to{ transform:translateY(-2000px); }  
+    }  
+      
+    /* PARTICLES */  
+    .particle{  
+      position:absolute;  
+      border-radius:50%;  
+      background:white;  
+      opacity:0.6;  
+
+      animation:particleMove linear infinite;  
+    }  
+      
+    @keyframes particleMove{  
+      from{  
+        transform:translateY(100vh) scale(0);  
+        opacity:0;  
+      }  
+      to{  
+        transform:translateY(-100vh) scale(1.5);  
+        opacity:1;  
+      }  
+    }  
+      
+    /* HEADER */  
+    header{  
+      position:fixed;  
+      top:0;  
+      left:0;  
+      width:100%;  
+
+      padding:22px 7%;  
+      display:flex;  
+      justify-content:space-between;  
+      align-items:center;  
+      background:rgba(0,0,0,0.35);  
+      backdrop-filter:blur(15px);  
+      z-index:999;  
+      border-bottom:1px solid rgba(255,255,255,0.08);  
+    }  
+      
+    .logo{  
+      font-family:'Orbitron',sans-serif;  
+      font-size:32px;  
+      font-weight:900;  
+      background:linear-gradient(90deg,#00e5ff,#ff00aa);  
+      -webkit-background-clip:text;  
+      -webkit-text-fill-color:transparent;  
+      letter-spacing:3px;  
+    }  
+
+      
+    nav{  
+      display:flex;  
+      gap:30px;  
+    }  
+      
+    nav a{  
+      text-decoration:none;  
+      color:white;  
+      font-weight:500;  
+      transition:0.4s;  
+      position:relative;  
+    }  
+      
+    nav a::after{  
+      content:"";  
+      position:absolute;  
+      bottom:-6px;  
+      left:0;  
+      width:0%;  
+      height:2px;  
+
+      background:#00e5ff;  
+      transition:0.4s;  
+    }  
+      
+    nav a:hover::after{  
+      width:100%;  
+    }  
+      
+    nav a:hover{  
+      color:#00e5ff;  
+    }  
+      
+    .menu-toggle{  
+      display:none;  
+      font-size:30px;  
+      cursor:pointer;  
+    }  
+      
+    /* HERO */  
+    .hero{  
+      min-height:100vh;  
+
+      display:flex;  
+      justify-content:center;  
+      align-items:center;  
+      padding:150px 8%;  
+      position:relative;  
+    }  
+      
+    .hero-container{  
+      display:grid;  
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));  
+      gap:50px;  
+      align-items:center;  
+      width:100%;  
+    }  
+      
+    .hero-text h1{  
+      font-family:'Orbitron',sans-serif;  
+      font-size:95px;  
+      line-height:1;  
+      margin-bottom:20px;  
+
+      text-transform:uppercase;  
+    }  
+      
+    .hero-text h1 span{  
+      display:block;  
+    }  
+      
+    .hero-text h1 span:first-child{  
+      color:white;  
+      text-shadow:0 0 20px white;  
+    }  
+      
+    .hero-text h1 span:last-child{  
+      background:linear-gradient(90deg,#00e5ff,#ff00aa);  
+      -webkit-background-clip:text;  
+      -webkit-text-fill-color:transparent;  
+      text-shadow:0 0 40px #00e5ff;  
+    }  
+      
+    .hero-text p{  
+
+      font-size:20px;  
+      line-height:1.9;  
+      color:#d6d6d6;  
+      max-width:700px;  
+      margin-top:20px;  
+    }  
+      
+    .typing{  
+      margin-top:25px;  
+      font-size:28px;  
+      font-weight:bold;  
+      color:#00e5ff;  
+      height:40px;  
+    }  
+      
+    .hero-buttons{  
+      display:flex;  
+      gap:20px;  
+      margin-top:40px;  
+      flex-wrap:wrap;  
+    }  
+
+      
+    .btn{  
+      padding:18px 40px;  
+      border-radius:50px;  
+      text-decoration:none;  
+      font-weight:bold;  
+      transition:0.4s;  
+      display:inline-block;  
+    }  
+      
+    .btn-primary{  
+      background:linear-gradient(90deg,#00e5ff,#0077ff);  
+      color:white;  
+      box-shadow:0 0 30px rgba(0,229,255,0.5);  
+    }  
+      
+    .btn-primary:hover{  
+      transform:translateY(-5px);  
+      box-shadow:0 0 50px #00e5ff;  
+
+    }  
+      
+    .btn-secondary{  
+      border:1px solid rgba(255,255,255,0.2);  
+      color:white;  
+      background:rgba(255,255,255,0.05);  
+      backdrop-filter:blur(10px);  
+    }  
+      
+    .btn-secondary:hover{  
+      background:#00e5ff;  
+      color:black;  
+    }  
+      
+    /* HERO CARD */  
+    .hero-card{  
+      background:rgba(255,255,255,0.05);  
+      padding:35px;  
+      border-radius:30px;  
+      backdrop-filter:blur(15px);  
+
+      border:1px solid rgba(255,255,255,0.08);  
+      box-shadow:0 0 50px rgba(0,229,255,0.15);  
+      position:relative;  
+      overflow:hidden;  
+    }  
+      
+    .hero-card::before{  
+      content:"";  
+      position:absolute;  
+      width:350px;  
+      height:350px;  
+      background:radial-gradient(circle,#00e5ff33,transparent 70%);  
+      top:-150px;  
+      right:-100px;  
+    }  
+      
+    .ai-circle{  
+
+      width:250px;  
+      height:250px;  
+      border-radius:50%;  
+      margin:auto;  
+      background:radial-gradient(circle,#00e5ff,#001d33);  
+      display:flex;  
+      justify-content:center;  
+      align-items:center;  
+      font-size:100px;  
+      box-shadow:  
+        0 0 50px #00e5ff,  
+        0 0 120px rgba(0,229,255,0.4);  
+      animation:float 5s ease-in-out infinite;  
+    }  
+      
+    @keyframes float{  
+      0%{ transform:translateY(0); }  
+      50%{ transform:translateY(25px); }  
+      100%{ transform:translateY(0); }  
+    }  
+
+      
+    .hero-stats{  
+      margin-top:40px;  
+      display:grid;  
+      grid-template-columns:repeat(2,1fr);  
+      gap:20px;  
+    }  
+      
+    .hero-stat{  
+      background:rgba(255,255,255,0.05);  
+      padding:20px;  
+      border-radius:20px;  
+      text-align:center;  
+    }  
+      
+    .hero-stat h2{  
+      font-size:38px;  
+      color:#00e5ff;  
+      margin-bottom:10px;  
+    }  
+      
+
+    /* SECTIONS */  
+    section{  
+      padding:120px 8%;  
+    }  
+      
+    .section-title{  
+      font-family:'Orbitron',sans-serif;  
+      font-size:55px;  
+      text-align:center;  
+      margin-bottom:70px;  
+      background:linear-gradient(90deg,#00e5ff,#ff00aa);  
+      -webkit-background-clip:text;  
+      -webkit-text-fill-color:transparent;  
+    }  
+      
+    /* CARDS */  
+    .cards{  
+      display:grid;  
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));  
+
+      gap:30px;  
+    }  
+      
+    .card{  
+      background:rgba(255,255,255,0.05);  
+      padding:35px;  
+      border-radius:30px;  
+      backdrop-filter:blur(15px);  
+      border:1px solid rgba(255,255,255,0.08);  
+      transition:0.5s;  
+      position:relative;  
+      overflow:hidden;  
+    }  
+      
+    .card:before{  
+      content:"";  
+      position:absolute;  
+      width:300px;  
+      height:300px;  
+      background:radial-gradient(circle,#00e5ff33,transparent 70%);  
+      top:-150px;  
+      left:-150px;  
+      opacity:0;  
+      transition:0.5s;  
+    }  
+      
+    .card:hover::before{ opacity:1; }  
+      
+    .card:hover{  
+      transform:translateY(-15px) scale(1.03);  
+      box-shadow: 0 0 40px rgba(0,229,255,0.35);  
+    }  
+      
+    .card i{  
+      font-size:60px;  
+      margin-bottom:25px;  
+      color:#00e5ff;  
+
+    }  
+      
+    .card h3{  
+      font-size:30px;  
+      margin-bottom:15px;  
+    }  
+      
+    .card p{  
+      line-height:1.9;  
+      color:#d8d8d8;  
+    }  
+      
+    /* PROJECTS */  
+    .project-image{  
+      width:100%;  
+      height:240px;  
+      object-fit:cover;  
+      border-radius:20px;  
+      margin-bottom:20px;  
+      transition:0.5s;  
+    }  
+
+      
+    .card:hover .project-image{  
+      transform:scale(1.05);  
+    }  
+      
+    /* VIDEO */  
+    .video-box{  
+      overflow:hidden;  
+      border-radius:30px;  
+      box-shadow:0 0 50px rgba(0,229,255,0.3);  
+    }  
+      
+    /* TERMINAL */  
+    .terminal{  
+      margin-top:50px;  
+      background:black;  
+      padding:35px;  
+      border-radius:25px;  
+      font-family:monospace;  
+      color:#00ff9d;  
+
+      line-height:2;  
+      box-shadow:0 0 40px rgba(0,255,157,0.15);  
+    }  
+      
+    /* CONTACT */  
+    .contact-box{  
+      max-width:750px;  
+      margin:auto;  
+      display:flex;  
+      flex-direction:column;  
+      gap:20px;  
+    }  
+      
+    .contact-box input,  
+    .contact-box textarea,  
+    .contact-box select{  
+      padding:20px;  
+      outline:none;  
+      border-radius:20px;  
+      background:rgba(255,255,255,0.08);  
+
+      color:white;  
+      font-size:18px;  
+      border:1px solid rgba(255,255,255,0.08);  
+    }  
+    
+    .contact-box select option {  
+      background: #040816;  
+      color: white;  
+    }  
+      
+    .send-btn{  
+      padding:20px;  
+      border:none;  
+      border-radius:50px;  
+      background:linear-gradient(90deg,#00e5ff,#0077ff);  
+      color:white;  
+      font-size:22px;  
+      font-weight:bold;  
+      cursor:pointer;  
+
+      transition:0.4s;  
+      display: flex;  
+      justify-content: center;  
+      align-items: center;  
+      gap: 10px;  
+    }  
+      
+    .send-btn:hover{  
+      transform:translateY(-5px);  
+      box-shadow:0 0 50px #00e5ff;  
+    }  
+      
+    /* SOCIALS */  
+    .socials{  
+      display:flex;  
+      justify-content:center;  
+      gap:25px;  
+      margin-top:50px;  
+      flex-wrap:wrap;  
+    }  
+      
+
+    .socials a{  
+      width:75px;  
+      height:75px;  
+      border-radius:50%;  
+      display:flex;  
+      justify-content:center;  
+      align-items:center;  
+      background:rgba(255,255,255,0.08);  
+      color:white;  
+      font-size:28px;  
+      text-decoration:none;  
+      transition:0.4s;  
+    }  
+      
+    .socials a:hover{  
+      transform:scale(1.15) rotate(8deg);  
+      background:#00e5ff;  
+      color:black;  
+    }  
+      
+    /* FOOTER */  
+
+    footer{  
+      padding:60px 8%;  
+      text-align:center;  
+      background:rgba(0,0,0,0.35);  
+      border-top:1px solid rgba(255,255,255,0.08);  
+    }  
+      
+    footer h1{  
+      font-family:'Orbitron',sans-serif;  
+      font-size:40px;  
+      background:linear-gradient(90deg,#00e5ff,#ff00aa);  
+      -webkit-background-clip:text;  
+      -webkit-text-fill-color:transparent;  
+      margin-bottom:20px;  
+    }  
+      
+    /* ANIMATION */  
+    .fade{  
+      opacity:0;  
+
+      transform:translateY(60px);  
+      transition:1s;  
+    }  
+      
+    .fade.show{  
+      opacity:1;  
+      transform:translateY(0);  
+    }  
+      
+    /* RESPONSIVE */  
+    @media(max-width:950px){  
+      .hero-text h1{ font-size:60px; }  
+      .section-title{ font-size:40px; }  
+      nav{  
+        display:none;  
+        position:absolute;  
+        top:90px;  
+        left:0;  
+        width:100%;  
+        background:#071122;  
+        flex-direction:column;  
+
+        padding:30px;  
+        text-align:center;  
+      }  
+      nav.active{ display:flex; }  
+      .menu-toggle{ display:block; }  
+    }  
+  </style>  
+</head>  
+<body>  
+
+  <div class="cursor"></div>  
+  <div class="light"></div>  
+
+  <!-- BACKGROUND -->  
+  <div class="space">  
+    <div class="stars"></div>  
+  </div>  
+
+  <!-- HEADER -->  
+  <header>  
+    <div class="logo">WORLD VERTEX</div> 
+
+ 
+    <div class="menu-toggle" onclick="toggleMenu()">  
+      <i class="fa-solid fa-bars"></i>  
+    </div>  
+    <nav id="menu">  
+      <a href="#about">À propos</a>  
+      <a href="#services">Services</a>  
+      <a href="#projects">Projets</a>  
+      <a href="#video">Vidéo</a>  
+      <a href="#recrutement">Recrutement</a>  
+      <a href="#register">Inscription</a>  
+      <a href="#contact">Contact</a>  
+    </nav>  
+  </header>  
+
+  <!-- HERO -->  
+  <section class="hero">  
+    <div class="hero-container">  
+      <div class="hero-text fade">  
+
+        <h1>  
+          <span>WORLD</span>  
+          <span>VERTEX</span>  
+        </h1>  
+        <p>  
+          Nous créons des technologies futuristes, des intelligences artificielles modernes,  
+          des plateformes premium et des expériences digitales inspirées du futur.  
+        </p>  
+        <h3 class="typing"></h3>  
+        <div class="hero-buttons">  
+          <a href="#services" class="btn btn-primary">Découvrir</a>  
+          <a href="#contact" class="btn btn-secondary">Nous Contacter</a>  
+        </div>  
+      </div>  
+      <div class="hero-card fade">  
+        <div class="ai-circle">  
+
+          <i class="fa-solid fa-microchip"></i>  
+        </div>  
+        <div class="hero-stats">  
+          <div class="hero-stat">  
+            <h2>150+</h2>  
+            <p>Clients</p>  
+          </div>  
+          <div class="hero-stat">  
+            <h2>80+</h2>  
+            <p>Projets</p>  
+          </div>  
+          <div class="hero-stat">  
+            <h2>24/7</h2>  
+            <p>Support IA</p>  
+          </div>  
+          <div class="hero-stat">  
+            <h2>100%</h2>  
+            <p>Innovation</p>  
+          </div>  
+        </div>  
+      </div>  
+
+    </div>  
+  </section>  
+
+  <!-- ABOUT -->  
+  <section id="about" class="fade">  
+    <h2 class="section-title">Notre Entreprise</h2>  
+    <div class="cards">  
+      <div class="card">  
+        <i class="fa-solid fa-brain"></i>  
+        <h3>Intelligence Artificielle</h3>  
+        <p>Création d’IA avancées, assistants internes et automatisations modernes.</p>  
+      </div>  
+      <div class="card">  
+        <i class="fa-solid fa-rocket"></i>  
+        <h3>Innovation Digitale</h3>  
+        <p>Technologies premium conçues pour transformer le monde numérique.</p>  
+
+      </div>  
+      <div class="card">  
+        <i class="fa-solid fa-earth-africa"></i>  
+        <h3>Vision Mondiale</h3>  
+        <p>WORLD VERTEX développe des plateformes modernes pour le futur.</p>  
+      </div>  
+    </div>  
+  </section>  
+
+  <!-- SERVICES -->  
+  <section id="services" class="fade">  
+    <h2 class="section-title">Nos Services</h2>  
+    <div class="cards">  
+      <div class="card">  
+        <i class="fa-solid fa-code"></i>  
+        <h3>Développement Web</h3>  
+        <p>Sites web premium, rapides, futuristes et sécurisés.</p>  
+      </div>  
+
+      <div class="card">  
+        <i class="fa-solid fa-mobile-screen-button"></i>  
+        <h3>Applications Mobiles</h3>  
+        <p>Applications Android modernes avec technologies intelligentes.</p>  
+      </div>  
+      <div class="card">  
+        <i class="fa-solid fa-robot"></i>  
+        <h3>Chatbots IA</h3>  
+        <p>Assistants internes capables d’interagir automatiquement.</p>  
+      </div>  
+      <div class="card">  
+        <i class="fa-solid fa-shield-halved"></i>  
+        <h3>Cybersécurité</h3>  
+        <p>Protection avancée des données et systèmes numériques.</p>  
+      </div>  
+    </div>  
+
+  </section>  
+
+  <!-- PROJECTS -->  
+  <section id="projects" class="fade">  
+    <h2 class="section-title">Nos Projets</h2>  
+    <div class="cards">  
+      <div class="card">  
+        <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=1200&auto=format&fit=crop" class="project-image" alt="AI">  
+        <h3>AI Assistant</h3>  
+        <p>Assistant vocal intelligent capable de communiquer en plusieurs langues.</p>  
+      </div>  
+      <div class="card">  
+        <img src="https://images.unsplash.com/
+
+photo-1526379095098-d400fd0bf935?q=80&w=1200&auto=format&fit=crop" class="project-image" alt="Cyber">  
+        <h3>Cyber Dashboard</h3>  
+        <p>Dashboard moderne avec analysis intelligente en temps réel.</p>  
+      </div>  
+      <div class="card">  
+        <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop" class="project-image" alt="Systems">  
+        <h3>Future Systems</h3>  
+        <p>Plateformes futuristes optimisées pour des performances extrêmes.</p>  
+      </div>  
+    </div>  
+  </section>  
+
+  <!-- VIDEO -->  
+
+  <section id="video" class="fade">  
+    <h2 class="section-title">Présentation</h2>  
+    <div class="video-box">  
+      <iframe width="100%" height="600" src="https://www.youtube.com/embed/8Qn_spdM5Zg" frameborder="0" allowfullscreen></iframe>  
+    </div>  
+    <div class="terminal">  
+      Initializing WORLD VERTEX AI...<br>  
+      Quantum systems connected...<br>  
+      Neural network activated...<br>  
+      Cyber security online...<br>  
+      Welcome to the Future ✔  
+    </div>  
+  </section>  
+
+  <!-- RECRUTEMENT -->  
+  <section id="recrutement" class="fade">  
+    <h2 class="section-title">Recrutement</h2>  
+    <div class="cards">  
+      <div class="card" style="width: 100%;">  
+        <i class="fa-solid fa-user-plus"></i>  
+        <h3>Rejoindre WORLD VERTEX</h3>  
+        <p>Nous recrutons des talents dans plusieurs domaines du numérique et de la technologie moderne.</p>  
+        <h4 style="margin-top:20px; color:#00e5ff;">💻 Profils recherchés :</h4>  
+        <ul style="margin-top:15px; line-height:1.9; color:#d8d8d8; list-style: none;">  
+          <li>✔ Développeur Web (HTML, CSS, JavaScript)</li>  
+          <li>✔ Développeur Front-End (React, UI moderne)</li>  
+          <li>✔ Développeur Back-End (Node.js, PHP, API)</li>  
+          <li>✔ Designer UI/UX (Figma, 
+
+Photoshop)</li>  
+          <li>✔ Expert Cybersécurité</li>  
+          <li>✔ Ingénieur Intelligence Artificielle</li>  
+          <li>✔ Développeur Mobile (Android / Flutter)</li>  
+        </ul>  
+        <h4 style="margin-top:20px; color:#00e5ff;">🚀 Exemple de compétences :</h4>  
+        <div style="margin-top:10px; display:flex; flex-wrap:wrap; gap:10px;">  
+          <span style="background:#00e5ff22; padding:8px 15px; border-radius:20px;">HTML</span>  
+          <span style="background:#00e5ff22; padding:8px 15px; border-radius:20px;">CSS</span>  
+          <span style="background:#00e5ff22; padding:8px 15px; border-radius:20px;">JavaScript</span>  
+
+          <span style="background:#00e5ff22; padding:8px 15px; border-radius:20px;">Python</span>  
+          <span style="background:#00e5ff22; padding:8px 15px; border-radius:20px;">React</span>  
+          <span style="background:#00e5ff22; padding:8px 15px; border-radius:20px;">Node.js</span>  
+        </div>  
+        <a href="#register" class="btn btn-primary" style="margin-top:25px;">Postuler maintenant</a>  
+      </div>  
+    </div>  
+  </section>  
+
+  <!-- INSCRIPTION Connectée au Test -->  
+  <section id="register" class="fade">  
+    <h2 class="section-title">Inscription</h2>  
+
+    <div class="contact-box">  
+      <input type="text" id="name" placeholder="Nom complet">  
+      <input type="email" id="email" placeholder="Email">  
+      <select id="poste">  
+        <option value="">Choisir un poste</option>  
+        <option value="Développeur Web">Développeur Web</option>  
+        <option value="Développeur Front-End">Développeur Front-End</option>  
+        <option value="Développeur Back-End">Développeur Back-End</option>  
+        <option value="Designer UI/UX">Designer UI/UX</option>  
+        <option value="Cybersécurité">Cybersécurité</option>  
+        <option value="Intelligence Artificielle">Intelligence Artificielle</option>  
+      </select>  
+      <input type="text" id="whatsapp" placeholder="Numéro WhatsApp">  
+      <input type="text" id="country" placeholder="Pays">  
+      <input type="password" id="password" placeholder="Mot de passe">  
+        
+      <button class="send-btn" onclick="registerUser()">S'inscrire</button>  
+      <button class="send-btn" style="background: #25D366; margin-top: 10px;" onclick="sendInscriptionWhatsApp()">  
+        <i class="fab fa-whatsapp"></i> Envoyer</button>  
+    </div>  
+  </section>  
+
+
+  <!-- CONTACT -->  
+  <section id="contact" class="fade">  
+    <h2 class="section-title">Contactez-Nous</h2>  
+    <div class="contact-box">  
+      <input type="text" id="contact-name" placeholder="Votre nom">  
+      <input type="email" id="contact-email" placeholder="Votre email">  
+      <textarea id="contact-message" placeholder="Votre message"></textarea>  
+      <button class="send-btn" onclick="sendWhatsApp()">  
+        <i class="fab fa-whatsapp"></i> Envoyer</button>  
+    </div>  
+    <div class="socials">  
+      <a href="https://www.facebook.com/profile.php?id=61579603243003" 
+
+target="_blank"><i class="fab fa-facebook-f"></i></a>  
+      <a href="https://www.instagram.com/aigleroyale85?igsh=MWdiMTIxcTRvYm5sNA==" target="_blank"><i class="fab fa-instagram"></i></a>  
+      <a href="https://www.youtube.com/@SATORUGAPONGOLO" target="_blank"><i class="fab fa-youtube"></i></a>  
+      <a href="https://x.com/WorldVERTEXetu" target="_blank"><i class="fab fa-x-twitter"></i></a>  
+      <a href="https://tiktok.com/@gojo.sukuna843" target="_blank"><i class="fab fa-tiktok"></i></a>  
+    </div>  
+  </section>  
+
+  <!-- FOOTER -->  
+
+  <footer>  
+    <h1>WORLD VERTEX</h1>  
+    <p>Beyond Human Technology</p>  
+    <p style="margin-top:30px;">© 2026 WORLD VERTEX — All Rights Reserved</p>  
+  </footer>  
+
+<script type="module">  
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";  
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";  
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";  
+
+const firebaseConfig = {  
+
+  apiKey: "AIzaSyCMQMgEhorHFwY04yPNO_5fShutMX9FWNI",  
+  authDomain: "world-vertex-dca9e.firebaseapp.com",  
+  databaseURL: "https://world-vertex-dca9e-default-rtdb.firebaseio.com",  
+  projectId: "world-vertex-dca9e",  
+  storageBucket: "world-vertex-dca9e.appspot.com",   
+  messagingSenderId: "142095454153",  
+  appId: "1:142095454153:web:01781e9680be2cd5fea218",  
+  measurementId: "G-78Z7HW1T0Y"  
+};  
+
+const app = initializeApp(firebaseConfig);  
+const db = getFirestore(app);  
+const auth = getAuth(app);  
+
+window.registerUser = async function () {  
+  let name = document.getElementById("name").value.trim();  
+  let email = document.getElementById("email").value.trim();  
+  let poste = document.getElementById("poste").value;  
+  let whatsapp = document.getElementById("whatsapp").value.trim();  
+  let country = document.getElementById("country").value.trim();  
+  let password = document.getElementById("password").value.trim();  
+
+  if (!name || !email || !poste || !whatsapp || !country || !password) {  
+
+    alert("Veuillez remplir tous les champs.");  
+    return;  
+  }  
+
+  if (password.length < 6) {  
+    alert("Le mot de passe doit contenir au moins 6 caractères.");  
+    return;  
+  }  
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;  
+  if (!emailRegex.test(email)) {  
+    alert("Adresse Email invalide");  
+    return;  
+  }  
+
+  try {  
+    const userCredential = await createUserWithEmailAndPassword(auth, 
+
+email, password);  
+    const user = userCredential.user;  
+
+    await addDoc(collection(db, "users"), {  
+      uid: user.uid,  
+      name: name,  
+      email: email,  
+      poste: poste,  
+      whatsapp: whatsapp,  
+      country: country,  
+      createdAt: new Date()  
+    });  
+
+    localStorage.setItem("candidateData", JSON.stringify({  
+      name,  
+      email,  
+      poste,  
+      whatsapp,  
+      country  
+    }));  
+
+
+    alert("Inscription réussie ✔ Préparation de votre test d'aptitude...");  
+
+    setTimeout(() => {  
+      window.location.href = "./test.html";  
+    }, 800);  
+
+  } catch (error) {  
+    console.error(error);  
+    alert("Erreur Firebase : " + error.message);  
+  }  
+};  
+
+/* ANIMATIONS */  
+const cursor = document.querySelector(".cursor");  
+document.addEventListener("mousemove", (e) => {  
+  cursor.style.left = e.clientX + "px";  
+
+  cursor.style.top = e.clientY + "px";  
+});  
+
+const light = document.querySelector(".light");  
+document.addEventListener("mousemove", (e) => {  
+  light.style.left = e.clientX + "px";  
+  light.style.top = e.clientY + "px";  
+});  
+
+const spaceContainer = document.querySelector(".space");  
+for (let i = 0; i < 120; i++) {  
+  let particle = document.createElement("div");  
+  particle.classList.add("particle");  
+  particle.style.left = Math.random() * 100 + "%";  
+  particle.style.width = (Math.random() * 4 + 2) + "px";  
+
+  particle.style.height = particle.style.width;  
+  particle.style.animationDuration = (Math.random() * 15 + 10) + "s";  
+  spaceContainer.appendChild(particle);  
+}  
+
+window.toggleMenu = function () {  
+  document.getElementById("menu").classList.toggle("active");  
+};  
+
+/* TYPEWRITER */  
+const words = ["Artificial Intelligence", "Cyber Security", "Future Technology", "Neural Systems", "Quantum Innovation"];  
+let wordIndex = 0, charIndex = 0, isDeleting = false;  
+
+function typeAnimation() {  
+
+  const currentWord = words[wordIndex];  
+  const typingElement = document.querySelector(".typing");  
+  if (!typingElement) return;  
+
+  if (isDeleting) {  
+    typingElement.textContent = currentWord.substring(0, charIndex - 1);  
+    charIndex--;  
+  } else {  
+    typingElement.textContent = currentWord.substring(0, charIndex + 1);  
+    charIndex++;  
+  }  
+
+  if (!isDeleting && charIndex === currentWord.length) {  
+    isDeleting = true;  
+    setTimeout(typeAnimation, 2000);  
+  } else if (isDeleting && charIndex === 0) {  
+    isDeleting = false;  
+
+    wordIndex = (wordIndex + 1) % words.length;  
+    setTimeout(typeAnimation, 500);  
+  } else {  
+    setTimeout(typeAnimation, isDeleting ? 50 : 100);  
+  }  
+}  
+
+document.addEventListener("DOMContentLoaded", () => {  
+  setTimeout(typeAnimation, 500);  
+    
+  // Gestion du retour de test réussi  
+  if (localStorage.getItem("testPassed") === "true") {  
+    alert("🎉 Test réussi ! Bienvenue sur le site.");  
+    localStorage.removeItem("testPassed");  
+  }  
+});  
+
+
+const fades = document.querySelectorAll(".fade");  
+function checkFade() {  
+  fades.forEach(f => {  
+    if (f.getBoundingClientRect().top < window.innerHeight - 50) f.classList.add("show");  
+  });  
+}  
+window.addEventListener("scroll", checkFade);  
+window.addEventListener("load", checkFade);  
+
+/* WHATSAPP EXTRANET */  
+window.sendWhatsApp = function () {  
+  let name = document.getElementById("contact-name").value.trim();  
+  let email = 
+
+document.getElementById("contact-email").value.trim();  
+  let message = document.getElementById("contact-message").value.trim();  
+  if (!name || !email || !message) { alert("Remplis tous les champs."); return; }  
+  let text = "📥 MESSAGE WORLD VERTEX\n\nNom: " + name + "\nEmail: " + email + "\nMessage: " + message;  
+  window.open("https://wa.me/243800342363?text=" + encodeURIComponent(text), "_blank");  
+};  
+
+window.sendInscriptionWhatsApp = function () {  
+  let name = document.getElementById("name").value.trim();  
+  let email = 
+
+document.getElementById("email").value.trim();  
+  let poste = document.getElementById("poste").value;  
+  if (!name || !email || !poste) { alert("Remplis les champs requis."); return; }  
+  let text = "🆕 INSCRIPTION WORLD VERTEX\n\nNom: " + name + "\nEmail: " + email + "\nPoste: " + poste;  
+  window.open("https://wa.me/243800342363?text=" + encodeURIComponent(text), "_blank");  
+};  
+</script>  
+</body>  
+</html>
