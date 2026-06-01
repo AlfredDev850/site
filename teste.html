@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>World Vertex - Formulaire d'Examen Cadre</title>
+    <style>
+        body {
+            background-color: #f4f7f6;
+            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto 50px auto;
+        }
+        .form-card {
+            background: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border-top: 6px solid #e67e22;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #34495e;
+        }
+        input[type="text"], select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bdc3c7;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+        }
+        .test-section {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 2px dashed #edf2f7;
+        }
+        .question-box {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e67e22;
+        }
+        .question-title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+        .options-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .btn-submit {
+            background-color: #e67e22;
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s;
+        }
+        .btn-submit:hover { background-color: #d35400; }
+        .result-panel {
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 6px;
+            display: none;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="form-card">
+        <h2>PORTAIL D'ÉVALUATION DES CADRES</h2>
+        
+        <form id="examForm" onsubmit="analyserExamen(event)">
+            <div class="form-group">
+                <label for="nom">Nom de famille :</label>
+                <input type="text" id="nom" required placeholder="Ex: DUPONT">
+            </div>
+            
+            <div class="form-group">
+                <label for="prenom">Prénom :</label>
+                <input type="text" id="prenom" required placeholder="Ex: Jean">
+            </div>
+
+            <div class="form-group">
+                <label for="poste">Poste de Cadre visé (30 Spécialités) :</label>
+                <select id="poste" required onchange="chargerQuestionnaire()">
+                    <option value="">-- Sélectionnez un poste de commandement --</option>
+                    <option value="Cadre Responsable RH">Cadre Responsable RH</option>
+                    <option value="Cadre Directeur Financier">Cadre Directeur Financier</option>
+                    <option value="Cadre Chef de Projet IT">Cadre Chef de Projet IT</option>
+                    <option value="Cadre Directeur Marketing">Cadre Directeur Marketing</option>
+                    <option value="Cadre Responsable Logistique">Cadre Responsable Logistique</option>
+                    <option value="Cadre Chef des Ventes">Cadre Chef des Ventes</option>
+                    <option value="Cadre Directeur Juridique">Cadre Directeur Juridique</option>
+                    <option value="Cadre Responsable Cybersécurité">Cadre Responsable Cybersécurité</option>
+                    <option value="Cadre Auditeur Interne">Cadre Auditeur Interne</option>
+                    <option value="Cadre Directeur Technique (CTO)">Cadre Directeur Technique (CTO)</option>
+                    <option value="Cadre Responsable R&D">Cadre Responsable R&D</option>
+                    <option value="Cadre Chef de Produit">Cadre Chef de Produit</option>
+                    <option value="Cadre Manager de Transition">Cadre Manager de Transition</option>
+                    <option value="Cadre Responsable RSE">Cadre Responsable RSE</option>
+                    <option value="Cadre Directeur de la Communication">Cadre Directeur de la Communication</option>
+                    <option value="Cadre Responsable Supply Chain">Cadre Responsable Supply Chain</option>
+                    <option value="Cadre Contrôleur de Gestion">Cadre Contrôleur de Gestion</option>
+                    <option value="Cadre Responsable Qualité (QA)">Cadre Responsable Qualité (QA)</option>
+                    <option value="Cadre Directeur des Opérations (COO)">Cadre Directeur des Opérations (COO)</option>
+                    <option value="Cadre Administrateur de Base de Données">Cadre Administrateur de Base de Données</option>
+                    <option value="Cadre Architecte Cloud">Cadre Architecte Cloud</option>
+                    <option value="Cadre Consultant Stratégique">Cadre Consultant Stratégique</option>
+                    <option value="Cadre Responsable Clientèle (CRM)">Cadre Responsable Clientèle (CRM)</option>
+                    <option value="Cadre Business Analyst">Cadre Business Analyst</option>
+                    <option value="Cadre Facility Manager">Cadre Facility Manager</option>
+                    <option value="Cadre Responsable Sécurité">Cadre Responsable Sécurité</option>
+                    <option value="Cadre Directeur des Achats">Cadre Directeur des Achats</option>
+                    <option value="Cadre Ingénieur DevOps Principal">Cadre Ingénieur DevOps Principal</option>
+                    <option value="Cadre Data Officer">Cadre Data Officer</option>
+                    <option value="Cadre Responsable Formation">Cadre Responsable Formation</option>
+                </select>
+            </div>
+
+            <div id="testSection" class="test-section" style="display:none;">
+                <h3 style="margin-bottom: 20px; color: #2c3e50;">Feuille d'Examen : 15 Questions obligatoires</h3>
+                <div id="questionsContainer"></div>
+                <button type="submit" class="btn-submit">Soumettre la copie pour correction IA</button>
+            </div>
+        </form>
+
+        <div id="resultBox" class="result-panel"></div>
+    </div>
+</div>
+
+<script>
+    // Échantillons de questions par type d'évaluation pour générer les 15 questions
+    const banqueQuestions = [
+        { q: "Quelle méthode appliquez-vous pour résoudre un conflit d'équipe majeur ?", o: ["L'autorité et l'imposition immédiate", "La médiation neutre et l'écoute des deux parties", "Ignorer en attendant que la situation se calme"], c: 1 },
+        { q: "Comment gérez-vous une contrainte budgétaire imprévue en cours de trimestre ?", o: ["Annuler les projets stratégiques", "Réajuster les dépenses non critiques et optimiser les ressources", "Demander un crédit illimité"], c: 1 },
+        { q: "Quel est l'élément le plus important pour garantir la sécurité des données de votre service ?", o: ["La sensibilisation régulière et le contrôle strict des accès", "Changer les mots de passe une fois par an", "Faire confiance aveuglément aux collaborateurs"], c: 0 },
+        { q: "Face à un retard critique sur un livrable, quelle est la bonne posture managériale ?", o: ["Blâmer publiquement l'équipe", "Analyser le point de blocage et réorganiser les priorités", "Masquer le retard aux directeurs"], c: 1 },
+        { q: "Comment mesurez-vous le succès d'un plan d'action opérationnel ?", o: ["Par des indicateurs clés (KPI) précis et quantifiables", "Au ressenti général à la fin de l'année", "Par le nombre d'heures supplémentaires effectuées"], c: 0 }
+    ];
+
+    let questionsAffichees = [];
+
+    function chargerQuestionnaire() {
+        const poste = document.getElementById('poste').value;
+        const testSection = document.getElementById('testSection');
+        const container = document.getElementById('questionsContainer');
+        
+        if (!poste) {
+            testSection.style.display = "none";
+            return;
+        }
+
+        testSection.style.display = "block";
+        container.innerHTML = "";
+        questionsAffichees = [];
+
+        // Génération automatique d'un parcours de 15 questions à partir de la banque
+        for (let i = 0; i < 15; i++) {
+            let modele = banqueQuestions[i % banqueQuestions.length];
+            questionsAffichees.push({
+                intitule: `Question ${i + 1} (${poste}) : ${modele.q}`,
+                options: modele.o,
+                correct: modele.c
+            });
+        }
+
+        // Injection dans le HTML
+        questionsAffichees.forEach((q, index) => {
+            let html = `
+                <div class="question-box">
+                    <div class="question-title">${q.intitule}</div>
+                    <div class="options-group">
+            `;
+            q.options.forEach((opt, oIdx) => {
+                html += `
+                    <label>
+                        <input type="radio" name="q_${index}" value="${oIdx}" required> ${opt}
+                    </label>
+                `;
+            });
+            html += `</div></div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    function analyserExamen(event) {
+        event.preventDefault();
+        
+        const nom = document.getElementById('nom').value.toUpperCase();
+        const prenom = document.getElementById('prenom').value;
+        const resultBox = document.getElementById('resultBox');
+        
+        let note = 0;
+        let total = questionsAffichees.length;
+
+        // Calcul du score des 15 questions
+        for (let i = 0; i < total; i++) {
+            const reponseSelectionnee = document.querySelector(`input[name="q_${i}"]:checked`);
+            if (reponseSelectionnee && parseInt(reponseSelectionnee.value) === questionsAffichees[i].correct) {
+                note++;
+            }
+        }
+
+        const scorePourcentage = Math.round((note / total) * 100);
+        resultBox.style.display = "block";
+
+        // Décision du système d'intelligence artificielle
+        if (scorePourcentage >= 70) {
+            resultBox.style.backgroundColor = "#e8f8f5";
+            resultBox.style.color = "#27ae60";
+            resultBox.innerHTML = `✔ ÉVALUATION IA : APPROUVÉE<br>Félicitations ${prenom} ${nom}. Votre score est de ${note}/${total} (${scorePourcentage}%). Votre dossier de candidature a été validé et transmis à la direction générale.`;
+        } else {
+            resultBox.style.backgroundColor = "#fdedec";
+            resultBox.style.color = "#c0392b";
+            resultBox.innerHTML = `❌ ÉVALUATION IA : INSUFFISANTE<br>Candidat : ${prenom} ${nom}. Votre score est de ${note}/${total} (${scorePourcentage}%). Le seuil minimal de passage pour le statut Cadre est fixé à 70%. Vous pouvez retenter votre chance ultérieurement.`;
+        }
+        
+        // Remonte la page vers le résultat
+        resultBox.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>
+
+</body>
+</html>
