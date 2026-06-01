@@ -1166,6 +1166,46 @@ document.getElementById("email").value.trim();
 
         }, 1500); // Temps de simulation de calcul de l'IA
     }
+  <div class="container-quiz">
+    <h1>WORLD VERTEX</h1>
+    <div class="subtitle-quiz">Sélectionnez votre spécialité pour débuter le test</div>
+
+    <div class="select-box-quiz" id="select-trigger">
+        <span id="selected-label">Choisir un poste</span>
+        <span>▼</span>
+    </div>
+
+    <div class="options-menu-quiz" id="options-container">
+        <div class="option-item-quiz" data-value="Développeur Web">
+            <span>Développeur Web</span> <span class="radio-dot-quiz"></span>
+        </div>
+        <div class="option-item-quiz" data-value="Développeur Front-End">
+            <span>Développeur Front-End</span> <span class="radio-dot-quiz"></span>
+        </div>
+        <div class="option-item-quiz" data-value="Développeur Back-End">
+            <span>Développeur Back-End</span> <span class="radio-dot-quiz"></span>
+        </div>
+        <div class="option-item-quiz" data-value="Designer UI/UX">
+            <span>Designer UI/UX</span> <span class="radio-dot-quiz"></span>
+        </div>
+        <div class="option-item-quiz" data-value="Cybersécurité">
+            <span>Cybersécurité</span> <span class="radio-dot-quiz"></span>
+        </div>
+        <div class="option-item-quiz" data-value="Intelligence Artificielle">
+            <span>Intelligence Artificielle</span> <span class="radio-dot-quiz"></span>
+        </div>
+    </div>
+
+    <form id="form-quiz" onsubmit="soumettreReponses(event)">
+        <div id="zone-questions"></div>
+    </form>
+
+    <div id="zone-correction">
+        <h3 style="color: #0ea5e9; margin-top: 0;">🤖 Correction de l'IA :</h3>
+        <p id="texte-correction"></p>
+    </div>
+</div>
+
 </script>
 
 </body>  
