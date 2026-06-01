@@ -1036,6 +1036,137 @@ document.getElementById("email").value.trim();
   let text = "🆕 INSCRIPTION WORLD VERTEX\n\nNom: " + name + "\nEmail: " + email + "\nPoste: " + poste;  
   window.open("https://wa.me/243800342363?text=" + encodeURIComponent(text), "_blank");  
 };  
-</script>  
+</script> 
+  <style>
+    /* Styles pour les conditions d'admission */
+    .zone-conditions {
+        margin-top: 20px;
+        padding: 15px;
+        background: #1b1931;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+    }
+    .badge-statut {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+    .statut-admis {
+        background-color: #10b981;
+        color: white;
+    }
+    .statut-refuse {
+        background-color: #ef4444;
+        color: white;
+    }
+</style>
+
+<div class="container" style="margin-top: 20px; margin-bottom: 40px;">
+    <h2>📋 Conditions d'admission</h2>
+    <p class="subtitle">Critères de validation automatique de World Vertex :</p>
+    <ul style="color: var(--text-muted); font-size: 14px; padding-left: 20px; line-height: 1.6;">
+        <li><strong>Note minimale requise :</strong> 7 / 10 pour être admis.</li>
+        <li><strong>Précision technique :</strong> Détection de mots-clés liés à votre spécialité.</li>
+        <li><strong>Développement :</strong> Vos réponses doivent être argumentées (minimum 15 caractères par réponse).</li>
+    </ul>
+    
+    <div id="resultat-admission" style="display: none;" class="zone-conditions">
+        <h3>Verdict d'admission :</h3>
+        <p id="texte-statut"></p>
+    </div>
+</div>
+
+<script>
+    // Mots-clés techniques pour vérifier la pertinence des réponses
+    const dictionnaireMotsCles = {
+        "Développeur Web": ["serveur", "client", "http", "https", "dom", "navigateur", "dns", "api", "rest", "cache", "seo", "cookie"],
+        "Développeur Front-End": ["hook", "react", "css", "flexbox", "grid", "dom", "javascript", "ssr", "csr", "sass", "loading", "wcag"],
+        "Développeur Back-End": ["orm", "jwt", "sql", "nosql", "index", "middleware", "express", "jointure", "microservices", "log"],
+        "Designer UI/UX": ["ui", "ux", "fitts", "design", "thinking", "system", "test", "visuelle", "persona", "mobile", "affordance"],
+        "Cybersécurité": ["xss", "chiffrement", "injection", "privilege", "pentest", "ddos", "2fa", "mfa", "ransomware", "firewall", "tls"],
+        "Intelligence Artificielle": ["overfitting", "neurones", "supervisé", "relu", "sigmoid", "gradient", "machine", "deep", "llm", "matrix"]
+    };
+
+    // Remplacement de votre ancienne fonction "soumettreReponses" pour intégrer le calcul réel
+    function soumettreReponses(event) {
+        event.preventDefault();
+        
+        if (!posteChoisi) {
+            alert("Veuillez d'abord choisir un poste !");
+            return;
+        }
+
+        // 1. Déclenchement de l'animation de chargement
+        texteCorrection.innerText = "Analyse de vos réponses en cours par l'intelligence artificielle...";
+        zoneCorrection.style.display = 'block';
+        document.getElementById('resultat-admission').style.display = 'none';
+
+        setTimeout(() => {
+            const form = document.getElementById('form-quiz');
+            const data = new FormData(form);
+            const motsClesPoste = dictionnaireMotsCles[posteChoisi] || [];
+            
+            let totalQuestions = banquetteQuestions[posteChoisi].length;
+            let reponsesValides = 0;
+            let motsClesTrouves = 0;
+
+            // 2. Analyse des réponses de l'utilisateur
+            for (let i = 0; i < totalQuestions; i++) {
+                let reponseText = data.get(`reponse_${i}`) ? data.get(`reponse_${i}`).toLowerCase() : "";
+                
+                // Condition 1 : Longueur de la réponse (minimum 15 caractères)
+                if (reponseText.length >= 15) {
+                    reponsesValides++;
+                }
+                
+                // Condition 2 : Présence de mots-clés pertinents
+                motsClesPoste.forEach(mot => {
+                    if (reponseText.includes(mot)) {
+                        motsClesTrouves++;
+                    }
+                });
+            }
+
+            // 3. Calcul dynamique de la note sur 10
+            let scoreLongueur = (reponsesValides / totalQuestions) * 5; // Vaut max 5 points
+            let scorePertinence = (motsClesTrouves >= 4) ? 5 : (motsClesTrouves >= 2) ? 3 : 1; // Vaut max 5 points
+            let noteFinale = Math.min(10, Math.round(scoreLongueur + scorePertinence));
+
+            // Éviter d'avoir des notes trop élevées si l'utilisateur écrit n'importe quoi
+            if(reponsesValides === 0) noteFinale = 1;
+
+            // 4. Affichage de la zone de correction IA mise à jour
+            texteCorrection.innerHTML = `
+                <strong>Analyse pour le poste de : ${posteChoisi}</strong><br><br>
+                ✔️ <strong>Points forts :</strong> Vous avez répondu à l'ensemble des questions demandées avec un vocabulaire technique adapté.<br><br>
+                💡 <strong>Axe d'amélioration :</strong> Pensez à étayer vos définitions en incluant plus d'exemples de technologies réelles du marché.<br><br>
+                📈 <strong>Note globale estimée :</strong> ${noteFinale} / 10.
+            `;
+
+            // 5. Application des conditions d'admission
+            const zoneAdmission = document.getElementById('resultat-admission');
+            const texteStatut = document.getElementById('texte-statut');
+            zoneAdmission.style.display = 'block';
+
+            if (noteFinale >= 7) {
+                // CAS ADMIS
+                texteStatut.innerHTML = `
+                    Félicitations ! Votre score de <strong>${noteFinale}/10</strong> est supérieur ou égal au seuil requis.<br>
+                    <span class="badge-statut statut-admis">FÉLICITATIONS : ADMIS À WORLD VERTEX</span>
+                `;
+            } else {
+                // CAS REFUSÉ
+                texteStatut.innerHTML = `
+                    Désolé, votre score de <strong>${noteFinale}/10</strong> est insuffisant pour intégrer la plateforme. Le niveau minimum est de 7/10.<br>
+                    <span class="badge-statut statut-refuse">REFUSÉ : NIVEAU TECHNIQUE À REVOIR</span>
+                `;
+            }
+
+        }, 1500); // Temps de simulation de calcul de l'IA
+    }
+</script>
+
 </body>  
 </html>
