@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace En Direct - Observatoire, Terre & Actualités Mondiales</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0b0d17;
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #15192b;
+            padding: 1rem 2rem;
+            text-align: center;
+            border-bottom: 2px solid #2c3558;
+        }
+        header h1 {
+            color: #4da6ff;
+            font-size: 1.8rem;
+        }
+        nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            background-color: #1c233d;
+            padding: 10px;
+            flex-wrap: wrap;
+        }
+        button {
+            background-color: #2c3558;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        button:hover, button.active {
+            background-color: #0066cc;
+        }
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            flex-direction: column;
+        }
+        .view-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 75vh;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(77, 166, 255, 0.2);
+            display: none;
+            flex-direction: column;
+        }
+        .view-container.active {
+            display: flex;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            flex: 1;
+        }
+        .media-host {
+            width: 100%;
+            height: 100%;
+            flex: 1;
+            background: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+            flex: 1;
+        }
+        .stream-bar {
+            background-color: #15192b;
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            border-top: 1px solid #2c3558;
+        }
+
+        .split-view {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .split-video-pane {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            background-color: #000000;
+            border-right: 2px solid #2c3558;
+        }
+        .split-text-pane {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #15192b;
+            padding: 15px;
+            overflow-y: auto;
+        }
+
+        @media (max-width: 850px) {
+            .split-view {
+                flex-direction: column;
+            }
+            .split-video-pane {
+                height: 45%;
+                border-right: none;
+                border-bottom: 2px solid #2c3558;
+            }
+            .split-text-pane {
+                height: 55%;
+            }
+        }
+
+        .interior-section {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background-color: #15192b;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .selector-menu {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #2c3558;
+        }
+        .selector-btn {
+            background-color: #0b0d17;
+            font-size: 0.85rem;
+            padding: 8px 14px;
+        }
+        .content-card {
+            background-color: #1c233d;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #4da6ff;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .planet-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .content-card h3 {
+            color: #4da6ff;
+            font-size: 1.3rem;
+        }
+        .audio-btn {
+            background-color: #28a745;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .audio-btn:hover {
+            background-color: #218838;
+        }
+        .planet-display {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .planet-img {
+            width: 280px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #2c3558;
+        }
+        .planet-text {
+            flex: 1;
+            min-width: 250px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        .interior { color: #ffd64d; }
+        .beauty { color: #4dff88; }
+        .danger { color: #ff4d4d; }
+        .science { color: #ff994d; }
+
+        .tv-controls {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            background-color: #1c233d;
+            flex-wrap: wrap;
+        }
+        .tv-controls input, .tv-controls select {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: 1px solid #2c3558;
+            background-color: #0b0d17;
+            color: #ffffff;
+        }
+        .tv-controls input {
+            flex: 1;
+        }
+
+        .tv-news-header {
+            background: linear-gradient(90deg, #cc0000 0%, #800000 100%);
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(204, 0, 0, 0.4);
+        }
+        .tv-animals-header {
+            background: linear-gradient(90deg, #1b5e20 0%, #2e7d32 100%);
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.4);
+        }
+        .tv-nasa-header {
+            background: linear-gradient(90deg, #0b3d91 0%, #105bd8 100%);
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(16, 91, 216, 0.4);
+        }
+        .live-badge {
+            background-color: #ff0000;
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            animation: pulse 1.5s infinite;
+            display: inline-block;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+        .tv-date-badge {
+            background: rgba(0,0,0,0.5);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        /* BANDEAU DÉFILANT LENT ET PAUSE AU SURVOL */
+        .tv-ticker-bar {
+            background-color: #000;
+            color: #ffd700;
+            padding: 8px 15px;
+            font-family: monospace;
+            font-size: 0.95rem;
+            border-top: 2px solid #cc0000;
+            white-space: nowrap;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .tv-ticker-text {
+            display: inline-block;
+            animation: ticker 65s linear infinite;
+        }
+        .tv-ticker-bar:hover .tv-ticker-text {
+            animation-play-state: paused;
+        }
+        @keyframes ticker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .saved-gallery-container {
+            background-color: #15192b;
+            padding: 15px;
+            border-top: 2px solid #2c3558;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .saved-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .saved-photo-card {
+            background: #1c233d;
+            border: 1px solid #4da6ff;
+            border-radius: 6px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .saved-photo-card img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #15192b;
+            font-size: 0.8rem;
+            color: #8a99ad;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🌌 Observatoire Spatial, Terre & TV Info Direct</h1>
+        <p style="font-size: 0.85rem; color: #4dff88; margin-top: 4px;">⚡ Détection Globale : Éclipses, Astéroïdes, Supernovas, Sursauts Gamma & Actualités Direct</p>
+    </header>
+
+    <nav>
+        <button id="btn-iss" class="tab-btn active" onclick="switchTab('iss', event)">🌍 Terre en Direct (ISS)</button>
+        <button id="btn-news" class="tab-btn" onclick="switchTab('news', event)">📰 Actualités du Monde (Tous Pays)</button>
+        <button id="btn-satellites-live" class="tab-btn" onclick="switchTab('satellites-live', event)">🛰️ Satellites en Direct (3D)</button>
+        <button id="btn-sun-live" class="tab-btn" onclick="switchTab('sun-live', event)">☀️ Soleil & Activité Coronale</button>
+        <button id="btn-jwst-spectacle" class="tab-btn" onclick="switchTab('jwst-spectacle', event)">🔭 Galaxie & Télescope Webb</button>
+        <button id="btn-orbits" class="tab-btn" onclick="switchTab('orbits', event)">☀️ Orbites du Système Solaire</button>
+        <button id="btn-asteroids" class="tab-btn" onclick="switchTab('asteroids', event)">☄️ Événements Spatiaux & Comètes</button>
+        <button id="btn-exoplanets" class="tab-btn" onclick="switchTab('exoplanets', event)">🪐 Exoplanètes (NASA)</button>
+        <button id="btn-deep-sky" class="tab-btn" onclick="switchTab('deep-sky', event)">🌌 Ciel Profond (ESASky)</button>
+        <button id="btn-earth-rotation" class="tab-btn" onclick="switchTab('earth-rotation', event)">🌐 Rotation Terrestre</button>
+        <button id="btn-planets" class="tab-btn" onclick="switchTab('planets', event)">🪐 Planètes 3D (NASA)</button>
+        <button id="btn-inside" class="tab-btn" onclick="switchTab('inside', event)">🔊 Analyses Scientifiques Vocales</button>
+        <button id="btn-tv-custom" class="tab-btn" onclick="switchTab('tv-custom', event)">📺 Lecteur Direct & TV</button>
+        <button id="btn-animals" class="tab-btn" onclick="switchTab('animals', event)">🦁 Documentaires Animaux (Direct 50/50)</button>
+        <button id="btn-stargazing" class="tab-btn" onclick="switchTab('stargazing', event)">✨ Carte des Étoiles</button>
+        <button id="btn-nasa-tv" class="tab-btn" onclick="switchTab('nasa-tv', event)">🚀 NASA TV Direct (Direct 50/50)</button>
+    </nav>
+
+    <main>
+        <div id="iss" class="view-container active">
+            <div id="map"></div>
+            <div class="stream-bar">
+                <span id="iss-coords">🔴 Suivi spatial ISS en direct — Chargement des coordonnées...</span>
+            </div>
+        </div>
+
+        <div id="news" class="view-container">
+            <div class="tv-news-header">
+                <div>
+                    <span class="live-badge">🔴 DIRECT MONDIAL</span>
+                    <span style="margin-left: 10px;">DÉPÊCHES & ÉVÉNEMENTS INTERNATIONAUX</span>
+                </div>
+                <div class="tv-date-badge tv-clock-elem">📅 Chargement de la date exacte...</div>
+            </div>
+
+            <div class="tv-controls" style="border-bottom: 1px solid #2c3558;">
+                <input type="text" id="news-search-input" placeholder="🔍 Rechercher un événement, sujet ou pays (ex: Canada, Séisme, Élections...)" onkeyup="if(event.key === 'Enter') fetchWorldNews()">
+                
+                <select id="news-country-select" onchange="fetchWorldNews()">
+                    <option value="FR:fr">🇫🇷 France (FR)</option>
+                    <option value="US:en">🇺🇸 États-Unis (EN)</option>
+                    <option value="GB:en">🇬🇧 Royaume-Uni (EN)</option>
+                    <option value="CA:fr">🇨🇦 Canada (FR)</option>
+                    <option value="CD:fr">🇨🇩 RDC / Afrique (FR)</option>
+                    <option value="DE:de">🇩🇪 Allemagne (DE)</option>
+                    <option value="ES:es">🇪🇸 Espagne (ES)</option>
+                    <option value="IT:it">🇮🇹 Italie (IT)</option>
+                    <option value="BR:pt">🇧🇷 Brésil (PT)</option>
+                    <option value="JP:ja">🇯🇵 Japon (JA)</option>
+                    <option value="CN:zh">🇨🇳 Chine (ZH)</option>
+                    <option value="ALL">🌍 Recherche Globale</option>
+                </select>
+                
+                <button onclick="fetchWorldNews()" style="background-color: #cc0000;">🔎 Filtrer / Actualiser</button>
+            </div>
+
+            <div class="interior-section" style="background-color: #0d111d;">
+                <div id="news-feed">
+                    <p>Connexion aux flux d'actualités mondiaux...</p>
+                </div>
+            </div>
+
+            <div class="tv-ticker-bar" title="Passez la souris ou touchez pour mettre en pause">
+                <div class="tv-ticker-text" id="tv-ticker-content">
+                    FLASH INFO MONDIAL • CHARGEMENT EN TEMPS RÉEL DE L'ACTUALITÉ INTERNATIONALE...
+                </div>
+            </div>
+        </div>
+
+        <div id="satellites-live" class="view-container">
+            <iframe src="https://www.arcgis.com/home/webscene/viewer.html?webscene=91a4f14110ab43d4a096e14e3e23ffcb" title="Traqueur de satellites en direct"></iframe>
+        </div>
+
+        <div id="sun-live" class="view-container" style="background:#000;">
+            <div style="display:flex; justify-content:center; align-items:center; height:100%;">
+                <img id="sdo-image" src="https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg" alt="Soleil SDO NASA Direct" style="max-width:100%; max-height:100%; object-fit:contain;">
+            </div>
+            <div class="stream-bar">
+                <span>☀️ Imagerie en direct par l'observatoire SDO de la NASA</span>
+                <button onclick="refreshSunImage()" style="padding: 2px 8px; font-size: 0.75rem;">🔄 Actualiser</button>
+            </div>
+        </div>
+
+        <div id="jwst-spectacle" class="view-container">
+            <iframe src="https://webbtelescope.org/resource-gallery/images" title="Spectacle Spatial Webb & Hubble"></iframe>
+        </div>
+
+        <div id="orbits" class="view-container">
+            <iframe src="https://eyes.nasa.gov/apps/solar-system/#/home"></iframe>
+        </div>
+
+        <div id="asteroids" class="view-container">
+            <iframe id="asteroids-iframe" src="https://eyes.nasa.gov/apps/asteroids/" title="Traqueur d'Astéroïdes NASA"></iframe>
+            
+            <div id="asteroids-video-pane" style="display: none; width: 100%; height: 100%; flex-direction: column;">
+                <div class="tv-nasa-header">
+                    <div>
+                        <span class="live-badge">🔴 DIRECT ÉVÉNEMENT COSMIQUE</span>
+                        <span id="asteroid-live-title" style="margin-left: 10px;">DÉTECTION EN TEMPS RÉEL</span>
+                    </div>
+                    <button onclick="restoreAsteroid3D()" style="background-color: #2c3558; font-size: 0.75rem; padding: 4px 8px;">🔄 Revenir à la 3D</button>
+                </div>
+                
+                <div id="host-video-asteroid-live" class="media-host"></div>
+
+                <div class="saved-gallery-container">
+                    <h4 style="color: #4da6ff;">📸 Galerie des Captures Spatiales</h4>
+                    <div id="saved-gallery-list" class="saved-gallery-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="exoplanets" class="view-container">
+            <iframe src="https://eyes.nasa.gov/apps/exo/" title="Exploration des Exoplanètes"></iframe>
+        </div>
+
+        <div id="deep-sky" class="view-container">
+            <iframe src="https://sky.esa.int/" title="Exploration ESASky Ciel Profond"></iframe>
+        </div>
+
+        <div id="earth-rotation" class="view-container">
+            <iframe src="https://www.arcgis.com/home/webscene/viewer.html?webscene=91a4f14110ab43d4a096e14e3e23ffcb"></iframe>
+        </div>
+
+        <div id="planets" class="view-container">
+            <iframe src="https://eyes.nasa.gov/apps/solar-system/#/planets"></iframe>
+        </div>
+
+        <div id="inside" class="view-container">
+            <div class="interior-section">
+                <div class="selector-menu">
+                    <button class="selector-btn" onclick="showPlanet('soleil')">☀️ Le Soleil & Éruptions</button>
+                    <button class="selector-btn" onclick="showPlanet('mercure')">Mercure</button>
+                    <button class="selector-btn" onclick="showPlanet('venus')">Vénus</button>
+                    <button class="selector-btn" onclick="showPlanet('terre')">La Terre</button>
+                    <button class="selector-btn" onclick="showPlanet('mars')">Mars</button>
+                    <button class="selector-btn" onclick="showPlanet('jupiter')">Jupiter</button>
+                    <button class="selector-btn" onclick="showPlanet('saturne')">Saturne</button>
+                    <button class="selector-btn" onclick="showPlanet('uranus')">Uranus</button>
+                    <button class="selector-btn" onclick="showPlanet('neptune')">Neptune</button>
+                    <button class="selector-btn" style="border:1px solid #4da6ff;" onclick="showPlanet('vortex')">🌀 Vortex Spatiaux & Trous Noirs</button>
+                </div>
+                <div id="planet-card" class="content-card">
+                    <h3>Cliquez sur un astre ou phénomène ci-dessus</h3>
+                    <p>Sélectionnez un sujet pour découvrir sa structure physique, ses phénomènes scientifiques et lancer l'explication vocale automatique en français.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tv-custom" class="view-container">
+            <div class="tv-controls">
+                <input type="text" id="stream-url" placeholder="Collez un lien flux vidéo HLS (.m3u8) ou YouTube Embed...">
+                <button onclick="loadCustomStream()">▶️ Lancer le Direct</button>
+            </div>
+            <div id="custom-status" style="padding:5px 10px; font-size:0.85rem; color:#ffd700; background:#1c233d;">💡 Prêt à tester le lien saisi...</div>
+            <div id="host-video-custom" class="media-host"></div>
+        </div>
+
+        <div id="animals" class="view-container">
+            <div class="tv-animals-header">
+                <div>
+                    <span class="live-badge">🔴 CANAL NATURE DIRECT</span>
+                    <span style="margin-left: 10px;">DOCUMENTAIRES FAUNE & ÉCOSYSTÈMES</span>
+                </div>
+                <div class="tv-date-badge tv-clock-elem">📅 Chargement de la date...</div>
+            </div>
+
+            <div class="split-view">
+                <div class="split-video-pane">
+                    <div id="host-video-animals" class="media-host"></div>
+                    <div class="stream-bar">
+                        <span id="animals-status">🔍 Connexion au flux direct...</span>
+                        <button onclick="changeAnimalsStream()" style="background-color: #2e7d32; padding: 4px 10px;">🔄 Zapper</button>
+                    </div>
+                </div>
+
+                <div class="split-text-pane">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h3 style="color: #4dff88; font-size: 1.1rem;">🐾 Fil d'Actualité Nature & Animaux</h3>
+                        <button onclick="fetchAnimalNews()" style="background-color: #2e7d32; font-size: 0.75rem; padding: 4px 8px;">🔄 Actualiser</button>
+                    </div>
+                    <div id="animals-news-feed">
+                        <p>Connexion au flux d'actualités animalières...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="stargazing" class="view-container">
+            <iframe src="https://stellarium-web.org/"></iframe>
+        </div>
+
+        <div id="nasa-tv" class="view-container">
+            <div class="tv-nasa-header">
+                <div>
+                    <span class="live-badge">🔴 CANAL SPATIAL DIRECT</span>
+                    <span style="margin-left: 10px;">NASA TV & DÉPÊCHES ASTRONAUTIQUES</span>
+                </div>
+                <div class="tv-date-badge tv-clock-elem">📅 Chargement de la date...</div>
+            </div>
+
+            <div class="split-view">
+                <div class="split-video-pane">
+                    <div id="host-video-nasa" class="media-host"></div>
+                    <div class="stream-bar">
+                        <span id="nasa-status">🔍 Connexion au satellite NASA...</span>
+                        <button onclick="changeNasaStream()" style="background-color: #0b3d91; padding: 4px 10px;">🔄 Zapper</button>
+                    </div>
+                </div>
+
+                <div class="split-text-pane">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <h3 style="color: #4da6ff; font-size: 1.1rem;">🛰️ Fil d'Information Spatiale NASA</h3>
+                        <button onclick="fetchNasaNews()" style="background-color: #0b3d91; font-size: 0.75rem; padding: 4px 8px;">🔄 Actualiser</button>
+                    </div>
+                    <div id="nasa-news-feed">
+                        <p>Connexion aux dépêches de la NASA...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Détection globale : Astéroïdes, Éruptions Solaires, Supernovas, Sursauts Gamma & Actualités Mondiales en direct.
+    </footer>
+
+    <script>
+        let newsInterval = null;
+        let animalsInterval = null;
+        let nasaInterval = null;
+
+        const satelliteStreams = [
+            { name: "🚀 NASA TV Direct", url: "https://www.youtube-nocookie.com/embed/live_stream?channel=UC2pnprx18wbf4rasE432MSQ" },
+            { name: "🌍 Vue de la Terre depuis l'ISS", url: "https://www.youtube-nocookie.com/embed/P9C25Un7qpM" }
+        ];
+
+        const nasaStreams = [
+            { name: "🚀 NASA TV (Canal Officiel)", url: "https://www.youtube-nocookie.com/embed/live_stream?channel=UC2pnprx18wbf4rasE432MSQ" },
+            { name: "🌍 Station Spatiale ISS Direct", url: "https://www.youtube-nocookie.com/embed/P9C25Un7qpM" }
+        ];
+
+        const animalsStreams = [
+            { name: "🦁 Caméra Nature & Faune Direct", url: "https://www.youtube-nocookie.com/embed/ydYDqZQpim8" }
+        ];
+
+        let currentNasaIndex = 0;
+        let currentAnimalIndex = 0;
+        let currentAsteroidName = "Événement Détecté";
+
+        function smartPlayStream(videoId, streamsList, statusElemId, index = 0) {
+            const hostElem = document.getElementById(`host-${videoId}`);
+            const statusElem = document.getElementById(statusElemId);
+
+            if (!hostElem) return;
+
+            const streamIndex = index % streamsList.length;
+            const currentStream = streamsList[streamIndex];
+
+            if (statusElem) statusElem.innerText = `🟢 EN DIRECT : ${currentStream.name}`;
+
+            hostElem.innerHTML = `
+                <iframe src="${currentStream.url}?autoplay=1&mute=1&enablejsapi=1" 
+                        style="width:100%; height:100%; border:none;" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                </iframe>
+            `;
+        }
+
+        function changeAnimalsStream() {
+            currentAnimalIndex = (currentAnimalIndex + 1) % animalsStreams.length;
+            smartPlayStream('video-animals', animalsStreams, 'animals-status', currentAnimalIndex);
+        }
+
+        function changeNasaStream() {
+            currentNasaIndex = (currentNasaIndex + 1) % nasaStreams.length;
+            smartPlayStream('video-nasa', nasaStreams, 'nasa-status', currentNasaIndex);
+        }
+
+        function loadCustomStream() {
+            const url = document.getElementById('stream-url').value.trim();
+            if (url) {
+                const customList = [{ name: "Lien personnalisé", url: url }];
+                smartPlayStream('video-custom', customList, 'custom-status', 0);
+            }
+        }
+
+        const NASA_API_KEY = 'DEMO_KEY';
+
+        /* ANALYSE ET DÉTECTION GLOBALE DES ÉVÉNEMENTS SPATIAUX (Système Solaire + Univers Profond) */
+        async function checkForCloseAsteroids() {
+            const now = new Date();
+            const today = now.toISOString().split('T')[0];
+            
+            const tomorrowDate = new Date(now);
+            tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+            const tomorrow = tomorrowDate.toISOString().split('T')[0];
+
+            const urlAsteroids = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${today}&end_date=${tomorrow}&api_key=${NASA_API_KEY}`;
+            const urlSolarFlares = `https://api.nasa.gov/DONKI/FLR?startDate=${today}&endDate=${tomorrow}&api_key=${NASA_API_KEY}`;
+            const urlGCNEvents = `https://news.google.com/rss/search?q=NASA+supernova+gamma+burst+eclipse+meteor+shower&hl=fr&gl=FR&ceid=FR:fr&t=${Date.now()}`;
+
+            try {
+                let eventFound = false;
+
+                // 1. Détection Astéroïdes & Comètes
+                const response = await fetch(urlAsteroids);
+                const data = await response.json();
+
+                let allAsteroids = [];
+                if (data.near_earth_objects && data.near_earth_objects[today]) allAsteroids.push(...data.near_earth_objects[today]);
+                if (data.near_earth_objects && data.near_earth_objects[tomorrow]) allAsteroids.push(...data.near_earth_objects[tomorrow]);
+
+                allAsteroids.forEach(asteroid => {
+                    const approachData = asteroid.close_approach_data[0];
+                    if (approachData) {
+                        const passageTime = approachData.epoch_date_close_approach;
+                        const currentTime = Date.now();
+                        const eventDuration = 60 * 60 * 1000;
+
+                        const minDiam = asteroid.estimated_diameter?.meters?.estimated_diameter_min || 0;
+                        const maxDiam = asteroid.estimated_diameter?.meters?.estimated_diameter_max || 0;
+                        const avgSize = Math.round((minDiam + maxDiam) / 2);
+
+                        if (currentTime >= passageTime && currentTime <= (passageTime + eventDuration)) {
+                            triggerEventVideoMode(`☄️ PASSAGE ASTÉROÏDE : ${asteroid.name} (~${avgSize}m)`);
+                            eventFound = true;
+                        } 
+                    }
+                });
+
+                // 2. Détection Éruptions Solaires & Météo Spatiale
+                if (!eventFound) {
+                    try {
+                        const flareRes = await fetch(urlSolarFlares);
+                        const flares = await flareRes.json();
+                        if (flares && flares.length > 0) {
+                            const latest = flares[flares.length - 1];
+                            triggerEventVideoMode(`☀️ ÉRUPTION SOLAIRE : Classe ${latest.classType || 'M/X'} (Direct NASA SDO)`);
+                            eventFound = true;
+                        }
+                    } catch(e) {}
+                }
+
+                // 3. Détection Éclipse, Pluie de météores, Supernova, Sursaut Gamma
+                if (!eventFound) {
+                    try {
+                        const rssRes = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(urlGCNEvents)}`);
+                        const rssData = await rssRes.json();
+                        if (rssData.status === 'ok' && rssData.items.length > 0) {
+                            const eventTitle = rssData.items[0].title;
+                            if (eventTitle.toLowerCase().includes('eclipse') || eventTitle.toLowerCase().includes('éclipse')) {
+                                triggerEventVideoMode(`🌕 ÉCLIPSE EN COURS : ${eventTitle}`);
+                                eventFound = true;
+                            } else if (eventTitle.toLowerCase().includes('gamma') || eventTitle.toLowerCase().includes('supernova')) {
+                                triggerEventVideoMode(`🌌 ÉVÉNEMENT STELLAIRE : ${eventTitle}`);
+                                eventFound = true;
+                            } else if (eventTitle.toLowerCase().includes('météore') || eventTitle.toLowerCase().includes('étoile filante')) {
+                                triggerEventVideoMode(`💫 PLUIE DE MÉTÉORES : ${eventTitle}`);
+                                eventFound = true;
+                            }
+                        }
+                    } catch(e) {}
+                }
+
+                if (!eventFound) {
+                    restoreAsteroid3D();
+                }
+
+            } catch (error) {
+                console.error("Erreur du système de détection cosmique :", error);
+            }
+        }
+
+        function triggerEventVideoMode(eventDescription) {
+            switchTab('asteroids');
+
+            document.getElementById('asteroids-iframe').style.display = 'none';
+            const videoPane = document.getElementById('asteroids-video-pane');
+            videoPane.style.display = 'flex';
+
+            document.getElementById('asteroid-live-title').innerText = eventDescription;
+            smartPlayStream('video-asteroid-live', satelliteStreams, 'asteroid-live-title', 0);
+        }
+
+        function restoreAsteroid3D() {
+            const videoPane = document.getElementById('asteroids-video-pane');
+            if (videoPane && videoPane.style.display !== 'none') {
+                videoPane.style.display = 'none';
+                document.getElementById('asteroids-iframe').style.display = 'block';
+            }
+        }
+
+        function displaySavedGallery() {
+            let galleryContainer = document.getElementById('saved-gallery-list');
+            if (!galleryContainer) return;
+
+            let savedPhotos = JSON.parse(localStorage.getItem('asteroid_gallery')) || [];
+
+            if (savedPhotos.length === 0) {
+                galleryContainer.innerHTML = "<p style='color:#8a99ad; font-size:0.85rem;'>Aucune photo enregistrée pour le moment.</p>";
+                return;
+            }
+
+            galleryContainer.innerHTML = savedPhotos.map(photo => `
+                <div class="saved-photo-card">
+                    <img src="${photo.image}" alt="${photo.title}">
+                    <strong style="color:#4da6ff; font-size:0.8rem;">☄️ ${photo.title}</strong>
+                    <small style="color:#ffd700; font-size:0.7rem;">📅 ${photo.date}</small>
+                    <button onclick="deletePhoto(${photo.id})" style="background:#cc0000; padding:2px 5px; font-size:0.7rem; margin-top:3px;">🗑️ Supprimer</button>
+                </div>
+            `).join('');
+        }
+
+        function deletePhoto(photoId) {
+            let savedPhotos = JSON.parse(localStorage.getItem('asteroid_gallery')) || [];
+            savedPhotos = savedPhotos.filter(p => p.id !== photoId);
+            localStorage.setItem('asteroid_gallery', JSON.stringify(savedPhotos));
+            displaySavedGallery();
+        }
+
+        function updateTVClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('fr-FR', options);
+            const timeStr = now.toLocaleTimeString('fr-FR');
+            
+            const formattedDate = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+            
+            const clockElems = document.querySelectorAll('.tv-clock-elem');
+            clockElems.forEach(elem => {
+                elem.innerText = `📍 Direct | ${formattedDate} — ${timeStr}`;
+            });
+        }
+        setInterval(updateTVClock, 1000);
+        updateTVClock();
+
+        let map = L.map('map').setView([0, 0], 2);
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri / Google Infrastructure'
+        }).addTo(map);
+
+        let issIcon = L.icon({
+            iconUrl: 'https://upload.wikimedia.org/wikipedia/commons/d/d0/International_Space_Station.svg',
+            iconSize: [42, 42],
+            iconAnchor: [21, 21]
+        });
+        let issMarker = L.marker([0, 0], {icon: issIcon}).addTo(map);
+
+        async function updateISS() {
+            try {
+                const response = await fetch('https://api.wheretheiss.at/v1/satellites/25544');
+                const data = await response.json();
+                const { latitude, longitude, altitude, velocity } = data;
+
+                issMarker.setLatLng([latitude, longitude]);
+                document.getElementById('iss-coords').innerText = 
+                    `📍 Position ISS : Lat ${latitude.toFixed(2)}°, Lon ${longitude.toFixed(2)}° | Altitude : ${Math.round(altitude)} km | Vitesse : ${Math.round(velocity)} km/h`;
+            } catch (e) {
+                document.getElementById('iss-coords').innerText = "📍 Position ISS : En attente du signal de connexion...";
+            }
+        }
+        setInterval(updateISS, 4000);
+        updateISS();
+
+        const planetsData = {
+            'soleil': {
+                title: '☀️ Le Soleil : Reconnexion Magnétique & Éjections de Masse Coronale',
+                img: 'https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0304.jpg',
+                interior: 'Un cœur thermonucléaire atteignant 15 millions de Kelvin où l’hydrogène fusionne en hélium, entouré d’une zone radiative puis d’une zone convective.',
+                science: 'Les éruptions et protubérances solaires se produisent par Reconnexion Magnétique. Les lignes de champ magnétique du plasma tourbillonnent, se tordent et rompent brutalement, libérant des quantités phénoménales d’énergie.',
+                beauty: 'Les boucles coronales gigantesques sculptées par le champ magnétique et les aurores polaires qu’il déclenche sur Terre.',
+                danger: 'Vents solaires mortels, rayonnement ionisant extrême et tempêtes géomagnétiques capables de détruire nos réseaux électriques et satellites.'
+            },
+            'mercure': {
+                title: '☉ Mercure',
+                img: 'https://images-assets.nasa.gov/image/PIA16853/PIA16853~orig.jpg',
+                interior: 'Un gigantesque noyau de fer partiellement liquide occupant près de 85% du rayon de la planète, recouvert d’un fin manteau de silicate.',
+                science: 'En raison de sa proximité avec le Soleil et de sa très faible gravité, Mercure ne possède pas d’atmosphère soutenue mais une exosphère ténue.',
+                beauty: 'Ses grands escarpements rocheux et ses cratères illuminés par le Soleil.',
+                danger: 'Des températures extrêmes (+430°C le jour, -180°C la nuit) et une absence totale de bouclier atmosphérique.'
+            },
+            'venus': {
+                title: '♀ Vénus',
+                img: 'https://images-assets.nasa.gov/image/PIA00104/PIA00104~orig.jpg',
+                interior: 'Un noyau métallique entouré d’un manteau rocheux chaud et d’une croûte constituée de milliers de volcans actifs.',
+                science: 'Un effet de serre emballé catastrophique : son atmosphère composée à 96.5% de dioxyde de carbone piège l’énergie solaire.',
+                beauty: 'Ses nuages dorés en super-rotation et ses vastes plaines de lave figée.',
+                danger: '465°C à la surface, une pression atmosphérique de 92 bars et des nuages d’acide sulfurique.'
+            },
+            'terre': {
+                title: '♁ La Terre',
+                img: 'https://images-assets.nasa.gov/image/PIA00122/PIA00122~orig.jpg',
+                interior: 'Un noyau solide en fer et nickel au centre, un noyau externe liquide générant la magnétosphère, un manteau convectif et une croûte tectonique.',
+                science: 'La géodynamo dans le noyau externe liquide génère une magnétosphère protective déviant le vent solaire ionisant.',
+                beauty: 'Ses océans d’eau liquide, sa dynamique biologique et ses aurores aux pôles.',
+                danger: 'Tectonique des plaques (séismes et tsunamis), activité volcanique explosive et tempêtes atmosphériques.'
+            },
+            'mars': {
+                title: '♂ Mars',
+                img: 'https://images-assets.nasa.gov/image/PIA02820/PIA02820~orig.jpg',
+                interior: 'Un noyau dense de fer, nickel et soufre, entouré d’un manteau de silicate et d’une croûte riche en oxyde de fer.',
+                science: 'La perte du champ magnétique global il y a 4 milliards d’années a permis au vent solaire d’éroder la majeure partie de son atmosphère.',
+                beauty: 'Olympus Mons (volcan de 21 kilomètres de haut) et le canyon de Valles Marineris.',
+                danger: 'Pression atmosphérique quasi nulle, températures glaciales (-60°C en moyenne) et rayonnements cosmiques non filtrés.'
+            },
+            'jupiter': {
+                title: '♃ Jupiter',
+                img: 'https://images-assets.nasa.gov/image/PIA02863/PIA02863~orig.jpg',
+                interior: 'Un noyau rocheux et glacé ultra-dense, entouré d’une immense couche d’hydrogène métallique liquide, puis d’hydrogène et d’hélium gazeux.',
+                science: 'L’hydrogène métallique sous des pressions de plusieurs millions d’atmosphères génère le plus puissant champ magnétique planétaire.',
+                beauty: 'La Grande Tache Rouge (anticyclone géant) et les mouvements fluides de ses bandes nuageuses.',
+                danger: 'Ceinture de radiations létales, pression écrasante et absence de surface solide.'
+            },
+            'saturne': {
+                title: '♄ Saturne',
+                img: 'https://images-assets.nasa.gov/image/PIA01364/PIA01364~orig.jpg',
+                interior: 'Un noyau de roche, d’eau et d’éléments lourds, enveloppé d’hydrogène métallique fluide puis d’une haute atmosphère d’hydrogène et d’hélium.',
+                science: 'Ses anneaux sont maintenus et structurés par la gravité de petites lunes appelées "satellites bergers".',
+                beauty: 'Son système d’anneaux spectaculaire s’étendant sur des centaines de kilomètres.',
+                danger: 'Vents atmosphériques extrêmes dépassant 1 800 km/h et pressions colossales en profondeur.'
+            },
+            'uranus': {
+                title: '♅ Uranus',
+                img: 'https://images-assets.nasa.gov/image/PIA18182/PIA18182~orig.jpg',
+                interior: 'Un cœur rocheux recouvert d’un manteau d’eau, de méthane et d’ammoniac sous forme de fluide très chaud et dense.',
+                science: 'Axe d’inclinaison extrême de 98 degrés, provoquant des saisons extrêmes de 21 ans.',
+                beauty: 'Une teinte bleu-vert due au méthane de sa haute atmosphère qui absorbe la lumière rouge.',
+                danger: 'Températures chutant à -224°C et atmosphère toxique.'
+            },
+            'neptune': {
+                title: '♆ Neptune',
+                img: 'https://images-assets.nasa.gov/image/PIA01492/PIA01492~orig.jpg',
+                interior: 'Similaire à Uranus : noyau rocheux enveloppé d’un vaste manteau convectif d’eau, d’ammoniac et de méthane.',
+                science: 'Malgré son éloignement du Soleil, Neptune émet plus du double de l’énergie qu’elle reçoit, ce qui alimente des moteurs thermiques internes très violents.',
+                beauty: 'Une couleur bleu azur profond et des cirrus de méthane filant à haute altitude.',
+                danger: 'Les vents les plus rapides mesurés dans le Système solaire (jusqu’à 2 100 km/h).'
+            },
+            'vortex': {
+                title: '🌀 Les Vortex Spatiaux, Polaires & Trous Noirs',
+                img: 'https://images-assets.nasa.gov/image/PIA16598/PIA16598~orig.jpg',
+                interior: 'Au niveau cosmique, un vortex d’accrétion entoure un trou noir ou une proto-étoile. Au niveau planétaire, il s’agit d’une immense dépression aux pôles.',
+                science: 'Les vortex résultent de la conservation du moment cinétique et des forces de Coriolis atmosphériques ou gravitationnelles.',
+                beauty: 'Des structures géométriques parfaites comme l’hexagone polaire de Saturne.',
+                danger: 'Dans le cas d’un trou noir, les forces de marée gravitationnelles provoquent la spaghettification de toute matière aspirée.'
+            }
+        };
+
+        function showPlanet(key) {
+            const data = planetsData[key];
+            if (data) {
+                document.getElementById('planet-card').innerHTML = `
+                    <div class="planet-header">
+                        <h3>${data.title}</h3>
+                        <button class="audio-btn" onclick="speakPlanet('${key}')">🔊 Écouter l'analyse scientifique</button>
+                    </div>
+                    <div class="planet-display">
+                        <img class="planet-img" src="${data.img}" alt="${data.title}">
+                        <div class="planet-text">
+                            <p><span class="section-title interior">🔬 Structure & Intérieur :</span> ${data.interior}</p>
+                            <p><span class="section-title science">🧪 Explication Scientifique & Phénomènes :</span> ${data.science}</p>
+                            <p><span class="section-title beauty">✨ Merveilles & Observation :</span> ${data.beauty}</p>
+                            <p><span class="section-title danger">⚠️ Dangers & Conditions Extrêmes :</span> ${data.danger}</p>
+                        </div>
+                    </div>
+                `;
+                speakPlanet(key);
+            }
+        }
+
+        function speakPlanet(key) {
+            window.speechSynthesis.cancel();
+            const data = planetsData[key];
+            if (!data) return;
+
+            const textToSpeak = `${data.title}. Structure physique : ${data.interior}. Analyse scientifique : ${data.science}. Observation et caractéristiques : ${data.beauty}. Dangers : ${data.danger}.`;
+            
+            const utterance = new SpeechSynthesisUtterance(textToSpeak);
+            utterance.lang = 'fr-FR';
+            utterance.rate = 0.93;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function switchTab(tabId, evt) {
+            window.speechSynthesis.cancel();
+            
+            if (newsInterval) { clearInterval(newsInterval); newsInterval = null; }
+            if (animalsInterval) { clearInterval(animalsInterval); animalsInterval = null; }
+            if (nasaInterval) { clearInterval(nasaInterval); nasaInterval = null; }
+
+            const containers = document.querySelectorAll('.view-container');
+            containers.forEach(c => c.classList.remove('active'));
+
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+
+            const targetBtn = evt ? evt.currentTarget : document.getElementById(`btn-${tabId}`);
+            if (targetBtn) targetBtn.classList.add('active');
+
+            if (tabId === 'iss') {
+                setTimeout(() => map.invalidateSize(), 250);
+            } else if (tabId === 'news') {
+                fetchWorldNews();
+                newsInterval = setInterval(fetchWorldNews, 30000);
+            } else if (tabId === 'animals') {
+                smartPlayStream('video-animals', animalsStreams, 'animals-status', 0);
+                fetchAnimalNews();
+                animalsInterval = setInterval(() => {
+                    changeAnimalsStream();
+                    fetchAnimalNews();
+                }, 45000);
+            } else if (tabId === 'nasa-tv') {
+                smartPlayStream('video-nasa', nasaStreams, 'nasa-status', 0);
+                fetchNasaNews();
+                nasaInterval = setInterval(() => {
+                    changeNasaStream();
+                    fetchNasaNews();
+                }, 45000);
+            } else if (tabId === 'asteroids') {
+                displaySavedGallery();
+            }
+        }
+
+        function refreshSunImage() {
+            const img = document.getElementById('sdo-image');
+            img.src = "https://sdo.gsfc.nasa.gov/assets/img/latest/latest_1024_0171.jpg?t=" + new Date().getTime();
+        }
+
+        async function fetchWorldNews() {
+            const newsContainer = document.getElementById('news-feed');
+            const tickerElem = document.getElementById('tv-ticker-content');
+            const searchInput = document.getElementById('news-search-input').value.trim();
+            const countrySelect = document.getElementById('news-country-select').value;
+
+            newsContainer.innerHTML = "<p style='color:#ffd700;'>⚡ Récupération des dépêches internationales en direct...</p>";
+
+            let googleNewsRss = '';
+
+            if (searchInput !== '') {
+                googleNewsRss = `https://news.google.com/rss/search?q=${encodeURIComponent(searchInput)}&hl=fr&gl=FR&ceid=FR:fr&t=${Date.now()}`;
+            } 
+            else if (countrySelect !== 'ALL') {
+                const [gl, hl] = countrySelect.split(':');
+                googleNewsRss = `https://news.google.com/rss?hl=${hl}&gl=${gl}&ceid=${gl}:${hl}&t=${Date.now()}`;
+            } 
+            else {
+                googleNewsRss = `https://news.google.com/rss?hl=fr&gl=FR&ceid=FR:fr&t=${Date.now()}`;
+            }
+
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(googleNewsRss)}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.items && data.items.length > 0) {
+                    const titles = data.items.map(item => item.title).join(' • ');
+                    if (tickerElem) tickerElem.innerText = `🔴 DÉPÊCHES EN DIRECT : ${titles}`;
+
+                    newsContainer.innerHTML = data.items.map((article, index) => {
+                        const pubDateFormatted = new Date(article.pubDate).toLocaleString('fr-FR', {
+                            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+                        });
+
+                        return `
+                            <div class="content-card" style="border-left: 5px solid #cc0000; background-color: #12182b;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="background-color: #cc0000; color: white; padding: 2px 8px; font-size: 0.75rem; border-radius: 3px; font-weight: bold;">FLASH N°${index + 1}</span>
+                                    <small style="color: #4dff88; font-weight: bold;">📍 ${pubDateFormatted}</small>
+                                </div>
+                                <h3 style="color: #ffffff; font-size: 1.2rem;">${article.title}</h3>
+                                <p style="color: #c2d1e0; font-size:0.9rem;">${article.description ? article.description.replace(/<[^>]*>?/gm, '').substring(0, 220) + '...' : 'Événement ou actualité rapportée en direct.'}</p>
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                                    <small style="color: #8a99ad;">Source : ${article.author || 'Flux International Live'}</small>
+                                    <a href="${article.link}" target="_blank" style="background-color: #0066cc; color: white; padding: 5px 12px; border-radius: 4px; text-decoration: none; font-weight: bold; font-size: 0.85rem;">🔗 Consulter l'article complet</a>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    newsContainer.innerHTML = "<p style='color:#ff4d4d;'>Aucun résultat ou événement trouvé pour ce critère. Essayez un autre mot-clé ou un autre pays.</p>";
+                }
+            } catch (error) {
+                newsContainer.innerHTML = "<p style='color:#ff4d4d;'>Erreur de liaison réseau lors de la récupération des actualités mondiales.</p>";
+            }
+        }
+
+        async function fetchAnimalNews() {
+            const feed = document.getElementById('animals-news-feed');
+            const rssUrl = `https://news.google.com/rss/search?q=animaux+faune+nature+decouverte&hl=fr&gl=FR&ceid=FR:fr&t=${Date.now()}`;
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.items.length > 0) {
+                    feed.innerHTML = data.items.slice(0, 8).map((art, idx) => {
+                        const timeAgo = new Date(art.pubDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                        return `
+                            <div class="content-card" style="border-left: 4px solid #2e7d32; background-color: #0d1a10; padding: 12px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="background-color: #2e7d32; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: bold;">FAUNE N°${idx + 1}</span>
+                                    <small style="color: #4dff88;">📍 ${timeAgo}</small>
+                                </div>
+                                <h4 style="color: #ffffff; font-size: 0.95rem;">${art.title}</h4>
+                                <a href="${art.link}" target="_blank" style="color: #4dff88; font-size: 0.8rem; text-decoration: none; font-weight: bold;">🔗 Lire l'article complet</a>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                feed.innerHTML = "<p>Mise à jour du fil animalier en cours...</p>";
+            }
+        }
+
+        async function fetchNasaNews() {
+            const feed = document.getElementById('nasa-news-feed');
+            const rssUrl = `https://news.google.com/rss/search?q=NASA+espace+astronomie+satellites&hl=fr&gl=FR&ceid=FR:fr&t=${Date.now()}`;
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+
+            try {
+                const response = await fetch(apiUrl);
+                const data = await response.json();
+
+                if (data.status === 'ok' && data.items.length > 0) {
+                    feed.innerHTML = data.items.slice(0, 8).map((art, idx) => {
+                        const timeAgo = new Date(art.pubDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                        return `
+                            <div class="content-card" style="border-left: 4px solid #0b3d91; background-color: #0d1326; padding: 12px;">
+                                <div style="display:flex; justify-content:space-between; align-items:center;">
+                                    <span style="background-color: #0b3d91; color: white; padding: 2px 6px; font-size: 0.7rem; border-radius: 3px; font-weight: bold;">NASA N°${idx + 1}</span>
+                                    <small style="color: #4da6ff;">📍 ${timeAgo}</small>
+                                </div>
+                                <h4 style="color: #ffffff; font-size: 0.95rem;">${art.title}</h4>
+                                <a href="${art.link}" target="_blank" style="color: #4da6ff; font-size: 0.8rem; text-decoration: none; font-weight: bold;">🔗 Lire la dépêche spatiale</a>
+                            </div>
+                        `;
+                    }).join('');
+                }
+            } catch (e) {
+                feed.innerHTML = "<p>Mise à jour du fil NASA en cours...</p>";
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            displaySavedGallery();
+            setInterval(checkForCloseAsteroids, 30000);
+            checkForCloseAsteroids();
+        });
+    </script>
+</body>
+</html>
