@@ -1,0 +1,2040 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>WORLD HEALTH RADAR AI</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#06101d;
+color:#fff;
+min-height:100vh;
+}
+
+header{
+position:sticky;
+top:0;
+z-index:2000;
+background:#0d1b2a;
+border-bottom:1px solid #26384e;
+padding:14px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.logo{
+font-weight:bold;
+font-size:14px;
+}
+
+.live{
+font-size:11px;
+color:#22c55e;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:15px;
+padding-bottom:100px;
+}
+
+.page{
+display:none;
+}
+
+.page.active{
+display:block;
+}
+
+h1{
+font-size:23px;
+margin-bottom:15px;
+}
+
+h2{
+font-size:18px;
+margin-bottom:12px;
+}
+
+.card{
+background:#0d1b2a;
+border:1px solid #26384e;
+border-radius:14px;
+padding:15px;
+margin-bottom:15px;
+}
+
+.stats{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+}
+
+.stat{
+background:#142337;
+border:1px solid #26384e;
+border-radius:10px;
+padding:14px;
+}
+
+.stat strong{
+display:block;
+font-size:26px;
+margin-bottom:5px;
+}
+
+.stat span{
+font-size:11px;
+color:#94a3b8;
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+background:#07111f;
+border:1px solid #26384e;
+border-radius:8px;
+color:white;
+}
+
+button{
+cursor:pointer;
+}
+
+.btn{
+width:100%;
+padding:12px;
+border:0;
+border-radius:8px;
+background:#2563eb;
+color:#fff;
+font-weight:bold;
+}
+
+#map{
+width:100%;
+height:450px;
+border-radius:12px;
+}
+
+.event{
+background:#142337;
+border:1px solid #26384e;
+border-radius:12px;
+padding:14px;
+margin-bottom:12px;
+}
+
+.disease-box{
+background:#07111f;
+border-left:4px solid #3b82f6;
+border-radius:8px;
+padding:12px;
+margin:10px 0;
+}
+
+.label{
+font-size:10px;
+color:#94a3b8;
+text-transform:uppercase;
+}
+
+.disease-name{
+font-size:20px;
+font-weight:bold;
+margin-top:5px;
+}
+
+.meta{
+font-size:12px;
+line-height:1.9;
+color:#cbd5e1;
+}
+
+.meta strong{
+color:#fff;
+}
+
+.badge{
+display:inline-block;
+padding:5px 9px;
+border-radius:20px;
+font-size:10px;
+font-weight:bold;
+}
+
+.red{
+background:#dc2626;
+}
+
+.orange{
+background:#ea580c;
+}
+
+.yellow{
+background:#ca8a04;
+}
+
+.green{
+background:#15803d;
+}
+
+.score{
+font-size:25px;
+font-weight:bold;
+margin-top:10px;
+}
+
+.source{
+margin-top:10px;
+font-size:10px;
+color:#60a5fa;
+}
+
+.summary{
+margin-top:10px;
+font-size:12px;
+line-height:1.6;
+color:#cbd5e1;
+}
+
+.loading{
+padding:30px;
+text-align:center;
+color:#94a3b8;
+}
+
+.success{
+background:#052e16;
+border:1px solid #16a34a;
+padding:12px;
+border-radius:8px;
+font-size:12px;
+margin-bottom:15px;
+}
+
+.warning{
+background:#422006;
+border:1px solid #f97316;
+padding:12px;
+border-radius:8px;
+font-size:12px;
+line-height:1.6;
+margin-bottom:15px;
+}
+
+.info{
+font-size:13px;
+line-height:1.7;
+color:#94a3b8;
+}
+
+nav{
+position:fixed;
+bottom:0;
+left:0;
+right:0;
+z-index:3000;
+background:#0d1b2a;
+border-top:1px solid #26384e;
+display:flex;
+justify-content:space-around;
+padding:9px 2px;
+}
+
+nav button{
+background:none;
+border:0;
+color:#94a3b8;
+font-size:9px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:3px;
+}
+
+nav button.active{
+color:#3b82f6;
+}
+
+.icon{
+font-size:18px;
+}
+
+@media(min-width:700px){
+
+.stats{
+grid-template-columns:repeat(4,1fr);
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header>
+
+<div class="logo">
+🌍 WORLD HEALTH RADAR AI
+</div>
+
+<div class="live">
+🟢 <span id="status">CONNEXION</span>
+</div>
+
+</header>
+
+
+<div class="container">
+
+
+<!-- ================= ACCUEIL ================= -->
+
+<section id="accueil" class="page active">
+
+<h1>
+🌍 Radar sanitaire mondial
+</h1>
+
+<div id="connectionBox" class="success">
+📡 Connexion à l'OMS...
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+<strong id="total">--</strong>
+<span>Événements OMS</span>
+</div>
+
+<div class="stat">
+<strong id="recent">--</strong>
+<span>Événements récents</span>
+</div>
+
+<div class="stat">
+<strong id="diseases">--</strong>
+<span>Maladies détectées</span>
+</div>
+
+<div class="stat">
+<strong id="countries">--</strong>
+<span>Pays / régions</span>
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+📡 Synchronisation
+</h2>
+
+<p class="info">
+
+Dernière récupération :
+
+<strong id="lastUpdate">
+--
+</strong>
+
+<br><br>
+
+Source :
+
+<strong>
+Organisation mondiale de la Santé — Disease Outbreak News
+</strong>
+
+</p>
+
+<br>
+
+<button
+class="btn"
+onclick="loadWHO()">
+
+🔄 Actualiser les données
+
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+🚨 Derniers événements sanitaires
+</h2>
+
+<div id="homeEvents">
+
+<div class="loading">
+Chargement des événements de l'OMS...
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= CARTE ================= -->
+
+<section id="carte" class="page">
+
+<h1>
+🗺️ Carte mondiale
+</h1>
+
+<input
+id="search"
+placeholder="Rechercher une maladie, un pays ou une région..."
+>
+
+<div id="map"></div>
+
+</section>
+
+
+<!-- ================= ALERTES ================= -->
+
+<section id="alertes" class="page">
+
+<h1>
+🚨 Maladies & épidémies
+</h1>
+
+<select id="filter">
+
+<option value="ALL">
+Toutes les maladies
+</option>
+
+</select>
+
+<div id="events">
+
+<div class="loading">
+Chargement...
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ================= IA ================= -->
+
+<section id="ia" class="page">
+
+<h1>
+🤖 Détection précoce
+</h1>
+
+<div class="warning">
+
+⚠️ Le score IA est un indicateur expérimental de
+priorisation des événements publiés. Il ne prédit pas
+avec certitude une future épidémie et ne remplace pas
+les autorités sanitaires.
+
+</div>
+
+
+<div class="card">
+
+<h2>
+🧠 Comment fonctionne l'analyse ?
+</h2>
+
+<p class="info">
+
+Le système examine les informations publiées :
+
+<br><br>
+
+• maladie ou événement sanitaire<br>
+• date de publication<br>
+• pays / région mentionné<br>
+• résumé de l'événement<br>
+• informations épidémiologiques disponibles<br>
+• fraîcheur du signal
+
+</p>
+
+</div>
+
+
+<div class="card">
+
+<canvas id="chart"></canvas>
+
+</div>
+
+</section>
+
+
+<!-- ================= STATS ================= -->
+
+<section id="stats" class="page">
+
+<h1>
+📊 Statistiques
+</h1>
+
+<div class="card">
+
+<canvas id="statsChart"></canvas>
+
+</div>
+
+</section>
+
+
+<!-- ================= PARAMÈTRES ================= -->
+
+<section id="parametres" class="page">
+
+<h1>
+⚙️ Système
+</h1>
+
+<div class="card">
+
+<h2>
+📡 Connexion OMS
+</h2>
+
+<p class="info">
+
+Statut :
+
+<strong id="apiStatus">
+--
+</strong>
+
+<br><br>
+
+Dernière synchronisation :
+
+<strong id="apiTime">
+--
+</strong>
+
+<br><br>
+
+Actualisation automatique :
+
+<strong>
+Toutes les 5 minutes
+</strong>
+
+</p>
+
+</div>
+
+
+<div class="warning">
+
+Cette application est un outil de veille
+épidémiologique. Elle ne permet pas de diagnostiquer
+une personne et ne garantit pas la prédiction d'une
+épidémie future.
+
+</div>
+
+</section>
+
+
+</div>
+
+
+<!-- ================= NAVIGATION ================= -->
+
+<nav>
+
+<button
+class="active"
+onclick="showPage('accueil',this)">
+
+<span class="icon">🏠</span>
+Accueil
+
+</button>
+
+
+<button
+onclick="showPage('carte',this)">
+
+<span class="icon">🗺️</span>
+Carte
+
+</button>
+
+
+<button
+onclick="showPage('alertes',this)">
+
+<span class="icon">🚨</span>
+Alertes
+
+</button>
+
+
+<button
+onclick="showPage('ia',this)">
+
+<span class="icon">🤖</span>
+IA
+
+</button>
+
+
+<button
+onclick="showPage('stats',this)">
+
+<span class="icon">📊</span>
+Stats
+
+</button>
+
+
+<button
+onclick="showPage('parametres',this)">
+
+<span class="icon">⚙️</span>
+Paramètres
+
+</button>
+
+</nav>
+
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+
+<script>
+
+/* =====================================================
+API OFFICIELLE OMS
+===================================================== */
+
+const WHO_API =
+"https://www.who.int/api/news/diseaseoutbreaknews";
+
+
+let events=[];
+
+let map;
+
+let markers=[];
+
+let chart=null;
+
+let statsChart=null;
+
+
+/* =====================================================
+NAVIGATION
+===================================================== */
+
+function showPage(id,button){
+
+document
+.querySelectorAll(".page")
+.forEach(
+p=>p.classList.remove("active")
+);
+
+document
+.getElementById(id)
+.classList.add("active");
+
+document
+.querySelectorAll("nav button")
+.forEach(
+b=>b.classList.remove("active")
+);
+
+button.classList.add("active");
+
+
+if(id==="carte"){
+
+setTimeout(
+()=>{
+map.invalidateSize();
+},
+200
+);
+
+}
+
+}
+
+
+/* =====================================================
+CARTE
+===================================================== */
+
+function initMap(){
+
+map=
+L.map("map")
+.setView([10,20],2);
+
+L.tileLayer(
+"https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+{
+maxZoom:18,
+attribution:"© OpenStreetMap"
+}
+).addTo(map);
+
+}
+
+
+/* =====================================================
+SÉCURITÉ HTML
+===================================================== */
+
+function escapeHTML(value){
+
+return String(value || "")
+.replace(/&/g,"&amp;")
+.replace(/</g,"&lt;")
+.replace(/>/g,"&gt;")
+.replace(/"/g,"&quot;")
+.replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+EXTRACTION DU NOM DE LA MALADIE
+===================================================== */
+
+function extractDisease(title){
+
+if(!title)
+return "Événement sanitaire";
+
+
+/*
+On conserve le titre officiel de l'OMS
+comme référence.
+
+On recherche ensuite quelques maladies
+connues dans le titre.
+*/
+
+const diseases=[
+
+"Ebola",
+
+"Mpox",
+
+"Cholera",
+
+"Choléra",
+
+"Dengue",
+
+"Marburg",
+
+"Marburg virus",
+
+"Yellow fever",
+
+"Fièvre jaune",
+
+"Measles",
+
+"Rougeole",
+
+"Poliomyelitis",
+
+"Poliomyélite",
+
+"Influenza",
+
+"Grippe",
+
+"Avian influenza",
+
+"Grippe aviaire",
+
+"H5N1",
+
+"Zika",
+
+"Chikungunya",
+
+"Lassa",
+
+"Rift Valley fever",
+
+"Fièvre de la vallée du Rift",
+
+"Meningitis",
+
+"Méningite",
+
+"COVID-19",
+
+"Coronavirus",
+
+"Malaria",
+
+"Paludisme",
+
+"Tuberculosis",
+
+"Tuberculose"
+
+];
+
+
+for(
+const disease of diseases
+){
+
+if(
+title
+.toLowerCase()
+.includes(
+disease.toLowerCase()
+)
+){
+
+return disease;
+
+}
+
+}
+
+
+/*
+Si aucune maladie connue n'est
+trouvée, on conserve le titre
+officiel de l'OMS.
+*/
+
+return title;
+
+}
+
+
+/* =====================================================
+EXTRACTION DU PAYS / LIEU
+===================================================== */
+
+function extractLocation(item){
+
+let text="";
+
+text+=
+(item.Title || "")+
+" "+
+(item.Summary || "")+
+" "+
+(item.Overview || "")+
+" "+
+(item.Response || "");
+
+
+/*
+Liste de pays fréquemment rencontrés.
+*/
+
+const countries=[
+
+"Democratic Republic of the Congo",
+"Democratic Republic of Congo",
+"RDC",
+"Republic of the Congo",
+
+"Uganda",
+"Kenya",
+"Tanzania",
+"Rwanda",
+"Burundi",
+
+"Nigeria",
+"Ghana",
+"Cameroon",
+
+"South Africa",
+"Egypt",
+"Sudan",
+"South Sudan",
+
+"Guinea",
+"Liberia",
+"Sierra Leone",
+
+"France",
+"United Kingdom",
+"United States",
+
+"India",
+"China",
+"Japan",
+
+"Brazil",
+"Peru",
+"Colombia",
+
+"Indonesia",
+"Philippines",
+
+"Madagascar",
+"Ethiopia",
+"Somalia",
+
+"Pakistan",
+"Bangladesh"
+
+];
+
+
+for(
+const country of countries
+){
+
+if(
+text
+.toLowerCase()
+.includes(
+country.toLowerCase()
+)
+){
+
+return country;
+
+}
+
+}
+
+
+return "Lieu indiqué dans le rapport OMS";
+
+}
+
+
+/* =====================================================
+SCORE DE PRIORISATION
+===================================================== */
+
+function calculateScore(item){
+
+let score=20;
+
+
+/*
+Événement très récent
+*/
+
+const date=
+new Date(
+item.PublicationDate ||
+item.DateCreated
+);
+
+
+const age=
+(
+Date.now()-date.getTime()
+)/
+86400000;
+
+
+if(age<=1){
+
+score+=35;
+
+}
+else if(age<=3){
+
+score+=25;
+
+}
+else if(age<=7){
+
+score+=15;
+
+}
+else if(age<=30){
+
+score+=8;
+
+}
+
+
+/*
+Présence d'informations
+épidémiologiques.
+*/
+
+if(item.Epidemiology){
+
+score+=15;
+
+}
+
+
+/*
+Présence d'une évaluation.
+*/
+
+if(item.Assessment){
+
+score+=10;
+
+}
+
+
+/*
+Présence d'une réponse sanitaire.
+*/
+
+if(item.Response){
+
+score+=10;
+
+}
+
+
+return Math.min(
+100,
+score
+);
+
+}
+
+
+/* =====================================================
+NIVEAU
+===================================================== */
+
+function getLevel(score){
+
+if(score>=75)
+return "SIGNAL ÉLEVÉ";
+
+if(score>=50)
+return "SIGNAL PRÉCOCE";
+
+if(score>=30)
+return "SURVEILLANCE";
+
+return "NORMAL";
+
+}
+
+
+/* =====================================================
+CHARGEMENT OMS
+===================================================== */
+
+async function loadWHO(){
+
+document
+.getElementById("status")
+.innerText=
+"RÉCUPÉRATION...";
+
+
+document
+.getElementById("apiStatus")
+.innerText=
+"Connexion à l'OMS...";
+
+
+document
+.getElementById("connectionBox")
+.innerText=
+"📡 Récupération des Disease Outbreak News de l'OMS...";
+
+
+try{
+
+const response=
+await fetch(
+WHO_API,
+{
+cache:"no-store"
+}
+);
+
+
+if(!response.ok){
+
+throw new Error(
+"HTTP "+response.status
+);
+
+}
+
+
+const raw=
+await response.json();
+
+
+if(!Array.isArray(raw)){
+
+throw new Error(
+"Format de données inattendu"
+);
+
+}
+
+
+/*
+Transformation des événements
+OMS.
+*/
+
+events=
+raw.map(
+(item,index)=>{
+
+const title=
+item.Title ||
+item.OverrideTitle ||
+"Événement sanitaire";
+
+
+const disease=
+extractDisease(title);
+
+
+const location=
+extractLocation(item);
+
+
+const publicationDate=
+item.PublicationDate ||
+item.DateCreated ||
+item.LastModified;
+
+
+const score=
+calculateScore(item);
+
+
+return{
+
+id:
+item.DonId ||
+item.EventId ||
+index,
+
+title:title,
+
+disease:disease,
+
+location:location,
+
+date:publicationDate,
+
+summary:
+item.Summary ||
+item.Overview ||
+item.Response ||
+"Rapport sanitaire publié par l'OMS.",
+
+epidemiology:
+item.Epidemiology ||
+"Non précisée dans les données disponibles.",
+
+assessment:
+item.Assessment ||
+"Non précisée.",
+
+response:
+item.Response ||
+"Non précisée.",
+
+score:score,
+
+level:
+getLevel(score),
+
+source:
+"Organisation mondiale de la Santé (OMS)",
+
+url:
+item.ItemDefaultUrl ||
+""
+
+};
+
+}
+
+);
+
+
+/*
+Plus récents en premier.
+*/
+
+events.sort(
+(a,b)=>
+new Date(b.date)-
+new Date(a.date)
+);
+
+
+const now=
+new Date();
+
+
+document
+.getElementById("lastUpdate")
+.innerText=
+now.toLocaleString("fr-FR");
+
+
+document
+.getElementById("apiTime")
+.innerText=
+now.toLocaleString("fr-FR");
+
+
+document
+.getElementById("apiStatus")
+.innerText=
+"CONNECTÉ";
+
+
+document
+.getElementById("status")
+.innerText=
+"LIVE";
+
+
+document
+.getElementById("connectionBox")
+.innerText=
+"🟢 Données OMS récupérées avec succès.";
+
+
+updateDashboard();
+
+buildDiseaseFilter();
+
+renderHome();
+
+renderEvents();
+
+renderMap();
+
+renderCharts();
+
+}
+catch(error){
+
+console.error(error);
+
+
+document
+.getElementById("status")
+.innerText=
+"ERREUR";
+
+
+document
+.getElementById("apiStatus")
+.innerText=
+"ERREUR";
+
+
+document
+.getElementById("connectionBox")
+innerHTML=
+"🔴 Impossible de récupérer les données de l'OMS.<br><br>"+
+escapeHTML(error.message);
+
+}
+
+}
+
+
+/* =====================================================
+TABLEAU DE BORD
+===================================================== */
+
+function updateDashboard(){
+
+document
+.getElementById("total")
+.innerText=
+events.length;
+
+
+const recent=
+events.filter(
+e=>
+(
+Date.now()-
+new Date(e.date).getTime()
+)<
+7*86400000
+);
+
+
+document
+.getElementById("recent")
+.innerText=
+recent.length;
+
+
+const diseases=
+new Set(
+events.map(
+e=>e.disease
+)
+);
+
+
+document
+.getElementById("diseases")
+.innerText=
+diseases.size;
+
+
+const countries=
+new Set(
+events.map(
+e=>e.location
+)
+);
+
+
+document
+.getElementById("countries")
+.innerText=
+countries.size;
+
+}
+
+
+/* =====================================================
+FILTRE MALADIES
+===================================================== */
+
+function buildDiseaseFilter(){
+
+const filter=
+document
+.getElementById("filter");
+
+
+filter.innerHTML=
+`
+<option value="ALL">
+Toutes les maladies
+</option>
+`;
+
+
+const diseases=
+[
+...new Set(
+events.map(
+e=>e.disease
+)
+)
+]
+.sort();
+
+
+diseases.forEach(
+disease=>{
+
+const option=
+document.createElement("option");
+
+option.value=
+disease;
+
+option.textContent=
+"🦠 "+disease;
+
+filter.appendChild(
+option
+);
+
+});
+
+}
+
+
+/* =====================================================
+COULEUR
+===================================================== */
+
+function badgeClass(level){
+
+if(level==="SIGNAL ÉLEVÉ")
+return "red";
+
+if(level==="SIGNAL PRÉCOCE")
+return "orange";
+
+if(level==="SURVEILLANCE")
+return "yellow";
+
+return "green";
+
+}
+
+
+/* =====================================================
+CARTE D'ÉVÉNEMENT
+===================================================== */
+
+function eventHTML(e){
+
+const date=
+new Date(e.date)
+.toLocaleString(
+"fr-FR"
+);
+
+
+return`
+
+<div class="event">
+
+<span class="badge ${badgeClass(e.level)}">
+
+${escapeHTML(e.level)}
+
+</span>
+
+
+<div class="disease-box">
+
+<div class="label">
+Nom de la maladie / épidémie
+</div>
+
+<div class="disease-name">
+
+🦠 ${escapeHTML(e.disease)}
+
+</div>
+
+</div>
+
+
+<div class="meta">
+
+🌍 <strong>Pays / région :</strong>
+${escapeHTML(e.location)}
+
+<br>
+
+📍 <strong>Lieu :</strong>
+${escapeHTML(e.location)}
+
+<br>
+
+📅 <strong>Date du signalement :</strong>
+${escapeHTML(date)}
+
+<br>
+
+🚨 <strong>Niveau :</strong>
+${escapeHTML(e.level)}
+
+<br>
+
+🤖 <strong>Score :</strong>
+${e.score}/100
+
+</div>
+
+
+<div class="summary">
+
+<strong>📋 Résumé :</strong>
+
+<br>
+
+${escapeHTML(e.summary)}
+
+</div>
+
+
+<div class="source">
+
+📡 Source :
+${escapeHTML(e.source)}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* =====================================================
+ACCUEIL
+===================================================== */
+
+function renderHome(){
+
+const list=
+events
+.slice(0,8);
+
+
+document
+.getElementById("homeEvents")
+.innerHTML=
+list.length
+?
+list.map(eventHTML).join("")
+:
+`
+<div class="loading">
+Aucun événement disponible.
+</div>
+`;
+
+}
+
+
+/* =====================================================
+ALERTES
+===================================================== */
+
+function renderEvents(){
+
+const selected=
+document
+.getElementById("filter")
+.value;
+
+
+let list=
+events;
+
+
+if(selected!=="ALL"){
+
+list=
+events.filter(
+e=>
+e.disease===selected
+);
+
+}
+
+
+document
+.getElementById("events")
+.innerHTML=
+list.length
+?
+list.map(eventHTML).join("")
+:
+`
+<div class="loading">
+Aucun événement trouvé.
+</div>
+`;
+
+}
+
+
+document
+.getElementById("filter")
+.addEventListener(
+"change",
+renderEvents
+);
+
+
+/* =====================================================
+CARTE
+===================================================== */
+
+function renderMap(){
+
+markers.forEach(
+marker=>
+marker.remove()
+);
+
+markers=[];
+
+
+/*
+L'API OMS ne fournit pas toujours
+des coordonnées géographiques
+directement.
+
+On utilise ici une petite base
+de coordonnées pour les pays
+reconnus dans le texte.
+*/
+
+const coordinates={
+
+"Democratic Republic of the Congo":[-4.0383,21.7587],
+
+"Democratic Republic of Congo":[-4.0383,21.7587],
+
+"RDC":[-4.0383,21.7587],
+
+"Uganda":[1.3733,32.2903],
+
+"Kenya":[-0.0236,37.9062],
+
+"Rwanda":[-1.9403,29.8739],
+
+"Burundi":[-3.3731,29.9189],
+
+"Nigeria":[9.0820,8.6753],
+
+"Ghana":[7.9465,-1.0232],
+
+"Cameroon":[7.3697,12.3547],
+
+"South Africa":[-30.5595,22.9375],
+
+"Egypt":[26.8206,30.8025],
+
+"Sudan":[12.8628,30.2176],
+
+"South Sudan":[6.8770,31.3070],
+
+"Guinea":[9.9456,-9.6966],
+
+"Liberia":[6.4281,-9.4295],
+
+"Sierra Leone":[8.4606,-11.7799],
+
+"France":[46.2276,2.2137],
+
+"United Kingdom":[55.3781,-3.4360],
+
+"United States":[37.0902,-95.7129],
+
+"India":[20.5937,78.9629],
+
+"China":[35.8617,104.1954],
+
+"Japan":[36.2048,138.2529],
+
+"Brazil":[-14.2350,-51.9253],
+
+"Peru":[-9.1900,-75.0152],
+
+"Colombia":[4.5709,-74.2973],
+
+"Indonesia":[-0.7893,113.9213],
+
+"Philippines":[12.8797,121.7740],
+
+"Madagascar":[-18.7669,46.8691],
+
+"Ethiopia":[9.1450,40.4897],
+
+"Somalia":[5.1521,46.1996],
+
+"Pakistan":[30.3753,69.3451],
+
+"Bangladesh":[23.6850,90.3563]
+
+};
+
+
+events.forEach(
+e=>{
+
+const coords=
+coordinates[e.location];
+
+
+if(!coords)
+return;
+
+
+let color=
+"#22c55e";
+
+
+if(e.level==="SURVEILLANCE")
+color="#eab308";
+
+
+if(e.level==="SIGNAL PRÉCOCE")
+color="#f97316";
+
+
+if(e.level==="SIGNAL ÉLEVÉ")
+color="#ef4444";
+
+
+const marker=
+L.circleMarker(
+coords,
+{
+radius:
+7+(e.score/20),
+
+color:color,
+
+fillColor:color,
+
+fillOpacity:.85,
+
+weight:2
+}
+);
+
+
+marker.bindPopup(`
+
+<strong>
+🦠 ${escapeHTML(e.disease)}
+</strong>
+
+<br><br>
+
+🌍 ${escapeHTML(e.location)}
+
+<br>
+
+📅 ${new Date(e.date)
+.toLocaleDateString("fr-FR")}
+
+<br>
+
+🚨 ${escapeHTML(e.level)}
+
+<br>
+
+🤖 Score :
+${e.score}/100
+
+`);
+
+
+marker.addTo(map);
+
+markers.push(marker);
+
+});
+
+}
+
+
+/* =====================================================
+RECHERCHE
+===================================================== */
+
+document
+.getElementById("search")
+.addEventListener(
+"input",
+function(){
+
+const q=
+this.value
+.toLowerCase()
+.trim();
+
+
+markers.forEach(
+m=>m.remove()
+);
+
+markers=[];
+
+
+events
+.filter(
+e=>
+
+e.disease
+.toLowerCase()
+.includes(q)
+
+||
+
+e.location
+.toLowerCase()
+.includes(q)
+
+||
+
+e.title
+.toLowerCase()
+.includes(q)
+
+)
+.forEach(
+e=>{
+
+const coordinates={
+
+"RDC":[-4.0383,21.7587],
+
+"Democratic Republic of the Congo":[-4.0383,21.7587],
+
+"Uganda":[1.3733,32.2903],
+
+"Kenya":[-0.0236,37.9062],
+
+"Rwanda":[-1.9403,29.8739],
+
+"Nigeria":[9.0820,8.6753],
+
+"Egypt":[26.8206,30.8025],
+
+"Guinea":[9.9456,-9.6966],
+
+"Liberia":[6.4281,-9.4295],
+
+"Sierra Leone":[8.4606,-11.7799],
+
+"India":[20.5937,78.9629],
+
+"China":[35.8617,104.1954],
+
+"Brazil":[-14.2350,-51.9253]
+
+};
+
+
+const coords=
+coordinates[e.location];
+
+
+if(!coords)
+return;
+
+
+const marker=
+L.circleMarker(
+coords,
+{
+radius:9,
+color:"#3b82f6",
+fillColor:"#3b82f6",
+fillOpacity:.85
+}
+);
+
+
+marker.bindPopup(`
+
+<strong>
+🦠 ${escapeHTML(e.disease)}
+</strong>
+
+<br>
+
+🌍 ${escapeHTML(e.location)}
+
+<br>
+
+📅 ${new Date(e.date)
+.toLocaleDateString("fr-FR")}
+
+<br>
+
+🤖 Score :
+${e.score}/100
+
+`);
+
+
+marker.addTo(map);
+
+markers.push(marker);
+
+});
+
+});
+
+
+/* =====================================================
+GRAPHIQUES
+===================================================== */
+
+function renderCharts(){
+
+if(chart)
+chart.destroy();
+
+
+chart=
+new Chart(
+document
+.getElementById("chart"),
+{
+
+type:"bar",
+
+data:{
+
+labels:
+events
+.slice(0,10)
+.map(
+e=>e.disease
+),
+
+datasets:[{
+
+label:
+"Score de priorité",
+
+data:
+events
+.slice(0,10)
+.map(
+e=>e.score
+)
+
+}]
+
+},
+
+options:{
+responsive:true,
+
+scales:{
+y:{
+min:0,
+max:100
+}
+}
+
+}
+
+}
+);
+
+
+if(statsChart)
+statsChart.destroy();
+
+
+const counts={};
+
+
+events.forEach(
+e=>{
+
+counts[e.disease]=
+(
+counts[e.disease]||0
+)+1;
+
+});
+
+
+const labels=
+Object.keys(counts)
+.slice(0,10);
+
+
+statsChart=
+new Chart(
+document
+.getElementById("statsChart"),
+{
+
+type:"doughnut",
+
+data:{
+
+labels:labels,
+
+datasets:[{
+
+data:
+labels.map(
+x=>counts[x]
+)
+
+}]
+
+},
+
+options:{
+responsive:true
+}
+
+}
+);
+
+}
+
+
+/* =====================================================
+DÉMARRAGE
+===================================================== */
+
+window.addEventListener(
+"load",
+async()=>{
+
+initMap();
+
+await loadWHO();
+
+
+/*
+Actualisation automatique
+toutes les 5 minutes.
+*/
+
+setInterval(
+loadWHO,
+5*60*1000
+);
+
+});
+
+</script>
+
+</body>
+</html>
