@@ -1,0 +1,2433 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Gestion Scolaire Pro</title>
+
+<meta name="description"
+content="Application professionnelle de gestion des inscriptions et paiements scolaires.">
+
+<style>
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Arial,sans-serif;
+    background:#eef2f6;
+    color:#17202a;
+}
+
+button,input,select{
+    font:inherit;
+}
+
+.accountGate{
+    position:fixed;
+    inset:0;
+    background:#eef2f6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:9999;
+    overflow:auto;
+}
+
+.accountCard{
+    background:#fff;
+    width:min(520px,100%);
+    padding:25px;
+    border-radius:16px;
+    box-shadow:0 10px 40px #0002;
+    border:1px solid #d7dee5;
+}
+
+.accountLogo{
+    width:90px;
+    height:90px;
+    margin:0 auto 10px;
+    border-radius:15px;
+    background:#eef2f6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    font-size:45px;
+}
+
+.accountLogo img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+}
+
+.accountCard h1{
+    text-align:center;
+    margin:8px 0 10px;
+}
+
+.accountCard p{
+    font-size:13px;
+    color:#65727e;
+    line-height:1.5;
+}
+
+.accountCard label{
+    margin-top:10px;
+}
+
+.accountCard button{
+    margin-top:14px;
+}
+
+.accountMsg{
+    min-height:20px;
+    text-align:center;
+    font-weight:700;
+}
+
+.logoPreview{
+    width:100%;
+    min-height:80px;
+    border:1px dashed #aebbc6;
+    border-radius:8px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin-top:8px;
+    overflow:hidden;
+}
+
+.logoPreview img{
+    max-width:150px;
+    max-height:100px;
+    object-fit:contain;
+}
+
+.modeButtons{
+    text-align:center;
+    margin-top:15px;
+}
+
+.modeButtons button{
+    width:auto;
+    padding:8px 12px;
+    background:#fff;
+    color:#123b5d;
+    border:1px solid #cbd5df;
+}
+
+#loginBox{
+    display:none;
+}
+
+#loginBox.active{
+    display:block;
+}
+
+#createBox.hidden{
+    display:none;
+}
+
+header{
+    background:#123b5d;
+    color:white;
+    padding:16px 22px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+header h1{
+    margin:0;
+    font-size:21px;
+}
+
+header small{
+    opacity:.85;
+}
+
+.accountInfo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12px;
+}
+
+.logoutBtn,
+.settingsBtn,
+.refreshBtn{
+    width:auto;
+    margin:0;
+}
+
+.logoutBtn,
+.settingsBtn,
+.refreshBtn{
+    background:#fff;
+    color:#123b5d;
+    padding:9px 13px;
+}
+
+.wrap{
+    max-width:1150px;
+    margin:22px auto;
+    padding:0 14px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:390px 1fr;
+    gap:20px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid #d7dee5;
+    border-radius:12px;
+    padding:18px;
+    box-shadow:0 3px 14px #0000000b;
+}
+
+h2{
+    margin:0 0 14px;
+    font-size:18px;
+}
+
+.row{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+label{
+    font-size:12px;
+    font-weight:700;
+    display:block;
+    margin:10px 0 5px;
+}
+
+input,
+select,
+button{
+    width:100%;
+    padding:10px;
+    border:1px solid #cbd5df;
+    border-radius:7px;
+}
+
+button{
+    background:#123b5d;
+    color:#fff;
+    border:0;
+    font-weight:700;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.92;
+}
+
+.secondary{
+    background:#65727e;
+}
+
+.danger{
+    background:#9b2c2c;
+}
+
+.settingsPanel{
+    display:none;
+    max-width:1150px;
+    margin:15px auto 0;
+    padding:0 14px;
+}
+
+.settingsPanel.open{
+    display:block;
+}
+
+.muted{
+    color:#65727e;
+    font-size:13px;
+}
+
+.catalog{
+    display:grid;
+    gap:7px;
+    margin-top:12px;
+}
+
+.catalogItem{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border:1px solid #d9e0e6;
+    padding:8px 10px;
+    border-radius:7px;
+}
+
+.catalogItem button{
+    width:auto;
+    margin:0;
+    padding:6px 9px;
+    background:#9b2c2c;
+}
+
+.list{
+    margin-top:18px;
+    display:grid;
+    gap:8px;
+}
+
+.item{
+    padding:10px;
+    border:1px solid #d9e0e6;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.item:hover{
+    background:#f5f8fa;
+}
+
+.preview{
+    min-height:600px;
+}
+
+.receipt{
+    position:relative;
+    background:#fff;
+    border:2px solid #78909c;
+    padding:22px;
+    min-height:570px;
+    overflow:hidden;
+}
+
+.watermark{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transform:rotate(-25deg);
+    font-size:48px;
+    font-weight:800;
+    color:#0000000c;
+    pointer-events:none;
+}
+
+.rhead{
+    display:flex;
+    justify-content:space-between;
+    border-bottom:2px solid #123b5d;
+    padding-bottom:12px;
+    gap:15px;
+}
+
+.schoolBlock{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.receiptLogo{
+    width:65px;
+    height:65px;
+    object-fit:contain;
+    border:1px solid #d7dee5;
+    border-radius:7px;
+    background:#fff;
+}
+
+.school{
+    font-weight:800;
+    font-size:20px;
+}
+
+.school small{
+    display:block;
+    font-weight:400;
+    font-size:11px;
+    margin-top:3px;
+}
+
+.meta{
+    text-align:right;
+    font-size:12px;
+}
+
+.section{
+    margin-top:16px;
+}
+
+.line{
+    display:flex;
+    border-bottom:1px dotted #9aa7b1;
+    padding:6px 0;
+}
+
+.line b{
+    width:180px;
+}
+
+.amount{
+    font-size:22px;
+    font-weight:800;
+    margin:14px 0;
+}
+
+.qr{
+    width:105px;
+    height:105px;
+}
+
+.bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:end;
+    margin-top:25px;
+    gap:15px;
+}
+
+.note{
+    font-size:10px;
+    color:#58636d;
+    max-width:65%;
+}
+
+.photo{
+    width:85px;
+    height:100px;
+    border:1px solid #9aa7b1;
+    object-fit:cover;
+    background:#eef2f6;
+}
+
+.shareBar{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-top:15px;
+}
+
+.shareBar button{
+    margin:0;
+}
+
+.schoolIdentifier{
+    font-size:10px;
+    color:#65727e;
+    margin-top:5px;
+}
+
+@media(max-width:850px){
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .row{
+        grid-template-columns:1fr;
+    }
+
+    .rhead{
+        flex-direction:column;
+    }
+
+    .meta{
+        text-align:left;
+    }
+
+    .bottom{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+}
+
+@media print{
+
+    body{
+        background:white;
+    }
+
+    header,
+    .formcard,
+    .list,
+    .settingsPanel{
+        display:none!important;
+    }
+
+    .wrap{
+        margin:0;
+        padding:0;
+        max-width:none;
+    }
+
+    .grid{
+        display:block;
+    }
+
+    .receipt{
+        width:100%;
+        max-width:190mm;
+        margin:0 auto;
+        border:1px solid #555;
+        box-shadow:none;
+        min-height:0;
+        padding:18mm 14mm;
+    }
+
+    .watermark{
+        font-size:42px;
+    }
+
+    .shareBar{
+        display:none!important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ======================================================
+     CONNEXION / CREATION
+====================================================== -->
+
+<div id="accountGate" class="accountGate">
+
+<div class="accountCard">
+
+<div class="accountLogo" id="gateLogo">
+🏫
+</div>
+
+<!-- ======================================================
+     CREATION
+====================================================== -->
+
+<div id="createBox">
+
+<h1>Créer le compte de l'établissement</h1>
+
+<p>
+Créez le compte de votre école. Le logo choisi sera enregistré
+avec l'établissement et réutilisé automatiquement sur les reçus.
+</p>
+
+<label>Nom</label>
+<input id="accLast" placeholder="Nom">
+
+<label>Postnom</label>
+<input id="accMiddle" placeholder="Postnom">
+
+<label>Prénom</label>
+<input id="accFirst" placeholder="Prénom">
+
+<label>Poste / fonction</label>
+
+<select id="accRole">
+<option>Directeur / Directrice</option>
+<option>Secrétaire</option>
+<option>Comptable</option>
+<option>Administrateur</option>
+<option>Autre personnel</option>
+</select>
+
+<label>Nom de l'établissement</label>
+<input id="accSchool" placeholder="Nom de l'école">
+
+<label>Adresse e-mail</label>
+<input id="accEmail" type="email" placeholder="ecole@example.com">
+
+<label>Mot de passe</label>
+<input id="accPassword" type="password" placeholder="Au moins 6 caractères">
+
+<label>Confirmer le mot de passe</label>
+<input id="accPassword2" type="password">
+
+<label>Logo de l'établissement</label>
+
+<input
+id="accLogo"
+type="file"
+accept="image/png,image/jpeg,image/webp">
+
+<div class="logoPreview" id="logoPreview">
+<span>🖼️ Aperçu du logo</span>
+</div>
+
+<button onclick="createAccount()">
+Créer le compte et continuer
+</button>
+
+<p id="accountMsg" class="accountMsg"></p>
+
+<div class="modeButtons">
+
+Établissement déjà enregistré ?
+
+<br>
+
+<button onclick="showLogin()">
+🔐 Se connecter
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ======================================================
+     CONNEXION
+====================================================== -->
+
+<div id="loginBox">
+
+<h1>Connexion à l'établissement</h1>
+
+<p>
+Entrez simplement le nom de votre établissement et votre mot de passe.
+</p>
+
+<label>Nom de l'établissement</label>
+
+<input
+id="loginSchool"
+placeholder="Nom de l'école">
+
+<label>Mot de passe</label>
+
+<input
+id="loginPassword"
+type="password"
+placeholder="Mot de passe">
+
+<button onclick="loginSchoolAccount()">
+🔐 Se connecter
+</button>
+
+<button class="refreshBtn" onclick="refreshApplication()">
+🔄 Actualiser l'application
+</button>
+
+<p id="loginMsg" class="accountMsg"></p>
+
+<div class="modeButtons">
+
+Première utilisation ?
+
+<br>
+
+<button onclick="showCreate()">
+🏫 Créer une nouvelle école
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ======================================================
+     HEADER
+====================================================== -->
+
+<header>
+
+<div>
+
+<h1>
+Application de gestion scolaire
+</h1>
+
+<small>
+Écoles primaires • secondaires • humanités — inscriptions et paiements
+</small>
+
+</div>
+
+<div class="accountInfo">
+
+<span id="loggedUser"></span>
+
+<button class="logoutBtn" onclick="logout()">
+Déconnexion
+</button>
+
+</div>
+
+<button class="settingsBtn" onclick="toggleSettings()">
+⚙ Paramètres
+</button>
+
+</header>
+
+
+<!-- ======================================================
+     PARAMETRES
+====================================================== -->
+
+<div id="settingsPanel" class="settingsPanel">
+
+<div class="card">
+
+<h2>
+Paramètres — Activités et paiements
+</h2>
+
+<p class="muted">
+Ces paiements appartiennent uniquement à l'établissement actuellement connecté.
+</p>
+
+<div class="row">
+
+<input
+id="newPayment"
+placeholder="Ex. Frais de bibliothèque">
+
+<button onclick="addPayment()">
+Ajouter le paiement
+</button>
+
+</div>
+
+<div id="paymentCatalog" class="catalog">
+</div>
+
+<button class="secondary" onclick="toggleSettings()">
+Fermer
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ======================================================
+     APPLICATION
+====================================================== -->
+
+<div class="wrap">
+
+<div class="grid">
+
+<section>
+
+<div class="card formcard">
+
+<h2>
+Nouvelle inscription / paiement
+</h2>
+
+<p class="muted">
+Pour écoles primaires, secondaires et humanités
+</p>
+
+<label>
+Nom de l'établissement
+</label>
+
+<input id="school">
+
+
+<div class="row">
+
+<div>
+
+<label>
+Nom de l'élève
+</label>
+
+<input id="student" placeholder="Nom complet">
+
+</div>
+
+<div>
+
+<label>
+Classe
+</label>
+
+<input id="classe" placeholder="Ex. 6e primaire / 3e secondaire">
+
+</div>
+
+</div>
+
+
+<div class="row">
+
+<div>
+
+<label>
+Section
+</label>
+
+<select id="section">
+<option>Primaire</option>
+<option>Secondaire</option>
+<option>Humanités</option>
+</select>
+
+</div>
+
+<div>
+
+<label>
+Année scolaire
+</label>
+
+<input id="year" value="2026-2027">
+
+</div>
+
+</div>
+
+
+<div class="row">
+
+<div>
+
+<label>
+Nom du parent / responsable
+</label>
+
+<input id="parent">
+
+</div>
+
+<div>
+
+<label>
+Téléphone du responsable
+</label>
+
+<input id="parentPhone">
+
+</div>
+
+</div>
+
+
+<label>
+Motif du paiement
+</label>
+
+<select id="motive"></select>
+
+
+<label>
+Montant
+</label>
+
+<input
+id="amount"
+type="number"
+min="0"
+step="0.01"
+placeholder="50000">
+
+
+<div class="row">
+
+<div>
+
+<label>Devise</label>
+
+<select id="currency">
+<option>FC</option>
+<option>USD</option>
+</select>
+
+</div>
+
+<div>
+
+<label>Mode de paiement</label>
+
+<select id="method">
+<option>Espèces</option>
+<option>Mobile Money</option>
+<option>Virement</option>
+<option>Autre</option>
+</select>
+
+</div>
+
+</div>
+
+
+<label>
+Photo de l'étudiant (facultatif)
+</label>
+
+<input
+id="photo"
+type="file"
+accept="image/*">
+
+
+<button onclick="generate()">
+Générer la preuve
+</button>
+
+<button
+class="secondary"
+onclick="window.print()">
+
+Imprimer / enregistrer en PDF
+
+</button>
+
+</div>
+
+
+<div class="card list">
+
+<h2>
+Preuves enregistrées
+</h2>
+
+<div id="list"></div>
+
+<button
+class="danger"
+onclick="clearAll()">
+
+Effacer les données de cette école
+
+</button>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     RECU
+====================================================== -->
+
+<section class="preview">
+
+<div id="receipt" class="receipt">
+
+<div class="watermark">
+MODÈLE — NON OFFICIEL
+</div>
+
+
+<div style="text-align:center;font-size:9px;letter-spacing:1px;color:#68757f;margin-bottom:8px">
+
+PREUVE DE PAIEMENT — MODÈLE GÉNÉRIQUE
+
+</div>
+
+
+<div class="rhead">
+
+<div class="schoolBlock">
+
+<img
+id="rLogo"
+class="receiptLogo"
+alt="Logo de l'établissement">
+
+<div>
+
+<div class="school" id="rSchool">
+ÉTABLISSEMENT SCOLAIRE
+</div>
+
+<small>
+Preuve de paiement scolaire
+</small>
+
+<div class="schoolIdentifier">
+ID établissement :
+<span id="rSchoolID">—</span>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="meta">
+
+N° reçu :
+<span id="rNo">DEMO-000001</span>
+
+<br>
+
+Date :
+<span id="rDate"></span>
+
+</div>
+
+</div>
+
+
+<div class="section">
+
+<div class="line">
+<b>Élève :</b>
+<span id="rStudent">—</span>
+</div>
+
+<div class="line">
+<b>Classe :</b>
+<span id="rClasse">—</span>
+</div>
+
+<div class="line">
+<b>Section :</b>
+<span id="rSection">—</span>
+</div>
+
+<div class="line">
+<b>Année scolaire :</b>
+<span id="rYear">—</span>
+</div>
+
+<div class="line">
+<b>Parent / responsable :</b>
+<span id="rParent">—</span>
+</div>
+
+<div class="line">
+<b>Téléphone :</b>
+<span id="rParentPhone">—</span>
+</div>
+
+<div class="line">
+<b>Motif du paiement :</b>
+<span id="rMotive">—</span>
+</div>
+
+<div class="line">
+<b>Mode de paiement :</b>
+<span id="rMethod">—</span>
+</div>
+
+</div>
+
+
+<div class="amount">
+
+Montant :
+<span id="rAmount">
+0 FC
+</span>
+
+</div>
+
+
+<div class="bottom">
+
+<div>
+
+<img
+id="rPhoto"
+class="photo"
+alt="Photo">
+
+</div>
+
+
+<div>
+
+<img
+class="qr"
+src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPgAAAD4AQAAAADpqhamAAABRklEQVR4nO2YsZLEMAhDn3by/7+sKwDH22wX7BsnxU7WKiIZLDAyP5/Pb/jFX/xf4xegeLUsC/BYWc+vQz8GEAhZRh4ry/n14FLE3bkXtbILv+fwa3oXAsRcElbz69RvQMaaNmA1vx79t+C0wLGyml+L/rR7WVUDtAu/Dv0j+hF5zfmwml8HLiQk2QZl/Rc6p/4BvpuAyINwwW34PYSX1ytcP/ufTIJD+r9Qa8Rd+ywfEf8PVP+bvieFdh3R/16E49+XAKw4FvIG/HpwC6Q8ACLEH5H/2Hntcf6t4m+wvZpfl/9/dX/xHBH/G6/eh5ETvd9fg8/zn9oDiCHIDvxa7j9l/WF9+XtO/1OJP5L+oP53xqMAGucY7IT+5wtXqXb1QHvxewCf5z/OmafAVQhX82vRP+Y/eehrOw7wv3nWueL7L/7iK/E/hQiB92c/wbEAAAAASUVORK5CYII=">
+
+<div style="font-size:10px;text-align:center">
+QR : 0800342363
+</div>
+
+</div>
+
+</div>
+
+
+<div class="bottom">
+
+<div class="note">
+
+Document généré par une application de démonstration.
+Il ne constitue pas un reçu officiel d'une université, école ou administration.
+Vérifiez toujours le paiement auprès de l'établissement concerné.
+
+</div>
+
+<div>
+Signature : __________
+</div>
+
+</div>
+
+
+<div class="shareBar">
+
+<button onclick="shareWhatsApp()">
+📱 Envoyer sur WhatsApp
+</button>
+
+<button
+class="secondary"
+onclick="shareEmail()">
+
+✉️ Envoyer par e-mail
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ======================================================
+   OUTILS
+====================================================== */
+
+const $ = id => document.getElementById(id);
+
+function val(id){
+    return $(id).value.trim();
+}
+
+function money(n){
+    return Number(n || 0).toLocaleString('fr-FR');
+}
+
+function escapeHTML(text){
+
+    return String(text || '')
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+
+}
+
+
+/* ======================================================
+   COMPTES ECOLES
+====================================================== */
+
+function getAccounts(){
+
+    try{
+
+        return JSON.parse(
+            localStorage.getItem('schoolAccounts') || '[]'
+        );
+
+    }catch(e){
+
+        return [];
+
+    }
+
+}
+
+function saveAccounts(accounts){
+
+    localStorage.setItem(
+        'schoolAccounts',
+        JSON.stringify(accounts)
+    );
+
+}
+
+
+/* ======================================================
+   ECOLE ACTUELLE
+====================================================== */
+
+function getCurrentAccount(){
+
+    try{
+
+        return JSON.parse(
+            sessionStorage.getItem('currentSchoolAccount') ||
+            'null'
+        );
+
+    }catch(e){
+
+        return null;
+
+    }
+
+}
+
+function setCurrentAccount(account){
+
+    sessionStorage.setItem(
+        'currentSchoolAccount',
+        JSON.stringify(account)
+    );
+
+}
+
+function clearCurrentAccount(){
+
+    sessionStorage.removeItem(
+        'currentSchoolAccount'
+    );
+
+}
+
+
+/* ======================================================
+   ID ECOLE
+====================================================== */
+
+function getSchoolID(){
+
+    const account =
+        getCurrentAccount();
+
+    return account
+        ? account.id
+        : null;
+
+}
+
+
+/* ======================================================
+   DONNEES SEPAREES PAR ECOLE
+====================================================== */
+
+function schoolKey(type){
+
+    const id =
+        getSchoolID();
+
+    if(!id)return null;
+
+    return 'school_' + id + '_' + type;
+
+}
+
+
+/* ======================================================
+   HASH MOT DE PASSE
+====================================================== */
+
+async function hashPassword(password){
+
+    const encoder =
+        new TextEncoder();
+
+    const data =
+        encoder.encode(password);
+
+    const hashBuffer =
+        await crypto.subtle.digest(
+            'SHA-256',
+            data
+        );
+
+    const hashArray =
+        Array.from(
+            new Uint8Array(hashBuffer)
+        );
+
+    return hashArray
+        .map(
+            b => b.toString(16).padStart(2,'0')
+        )
+        .join('');
+
+}
+
+
+/* ======================================================
+   PREVISUALISATION LOGO
+====================================================== */
+
+$('accLogo').addEventListener(
+    'change',
+    function(){
+
+        const file =
+            this.files[0];
+
+        if(!file){
+
+            $('logoPreview').innerHTML =
+                '<span>🖼️ Aperçu du logo</span>';
+
+            return;
+
+        }
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(e){
+
+                $('logoPreview').innerHTML =
+                    `<img src="${e.target.result}" alt="Logo">`;
+
+                $('gateLogo').innerHTML =
+                    `<img src="${e.target.result}" alt="Logo">`;
+
+            };
+
+
+        reader.readAsDataURL(file);
+
+    }
+);
+
+
+/* ======================================================
+   CREATION COMPTE
+====================================================== */
+
+async function createAccount(){
+
+    const last =
+        val('accLast');
+
+    const middle =
+        val('accMiddle');
+
+    const first =
+        val('accFirst');
+
+    const role =
+        val('accRole');
+
+    const school =
+        val('accSchool');
+
+    const email =
+        val('accEmail');
+
+    const password =
+        val('accPassword');
+
+    const password2 =
+        val('accPassword2');
+
+
+    if(
+        !last ||
+        !middle ||
+        !first ||
+        !role ||
+        !school ||
+        !email ||
+        !password
+    ){
+
+        $('accountMsg').textContent =
+            'Veuillez remplir tous les champs.';
+
+        return;
+
+    }
+
+
+    if(password.length < 6){
+
+        $('accountMsg').textContent =
+            'Le mot de passe doit contenir au moins 6 caractères.';
+
+        return;
+
+    }
+
+
+    if(password !== password2){
+
+        $('accountMsg').textContent =
+            'Les deux mots de passe ne correspondent pas.';
+
+        return;
+
+    }
+
+
+    let accounts =
+        getAccounts();
+
+
+    const duplicate =
+        accounts.some(
+            a =>
+            a.school.toLowerCase() ===
+            school.toLowerCase()
+        );
+
+
+    if(duplicate){
+
+        $('accountMsg').textContent =
+            'Cette école existe déjà. Utilisez la connexion.';
+
+        return;
+
+    }
+
+
+    $('accountMsg').textContent =
+        'Création du compte...';
+
+
+    let logo = '';
+
+
+    const logoFile =
+        $('accLogo').files[0];
+
+
+    if(logoFile){
+
+        if(
+            ![
+                'image/png',
+                'image/jpeg',
+                'image/webp'
+            ].includes(logoFile.type)
+        ){
+
+            $('accountMsg').textContent =
+                'Format de logo non autorisé.';
+
+            return;
+
+        }
+
+
+        /*
+           Limite raisonnable pour éviter
+           de remplir inutilement le stockage.
+        */
+
+        if(logoFile.size > 2 * 1024 * 1024){
+
+            $('accountMsg').textContent =
+                'Le logo doit faire moins de 2 Mo.';
+
+            return;
+
+        }
+
+
+        logo =
+            await fileToDataURL(logoFile);
+
+    }
+
+
+    const passwordHash =
+        await hashPassword(password);
+
+
+    const account = {
+
+        id:
+            'SCH-' +
+            Date.now().toString(36).toUpperCase() +
+            '-' +
+            Math.floor(
+                1000 +
+                Math.random()*9000
+            ),
+
+        last,
+
+        middle,
+
+        first,
+
+        role,
+
+        school,
+
+        email,
+
+        passwordHash,
+
+        logo,
+
+        createdAt:
+            new Date().toISOString()
+
+    };
+
+
+    accounts.push(account);
+
+    saveAccounts(accounts);
+
+
+    /*
+       Catalogue indépendant de l'école.
+    */
+
+    localStorage.setItem(
+        'school_' +
+        account.id +
+        '_paymentCatalog',
+
+        JSON.stringify(defaultPayments)
+    );
+
+
+    setCurrentAccount(account);
+
+
+    $('accountGate').style.display =
+        'none';
+
+
+    loadAccount();
+
+}
+
+
+/* ======================================================
+   FICHIER → DATA URL
+====================================================== */
+
+function fileToDataURL(file){
+
+    return new Promise(
+        (resolve,reject)=>{
+
+            const reader =
+                new FileReader();
+
+            reader.onload =
+                () => resolve(reader.result);
+
+            reader.onerror =
+                reject;
+
+            reader.readAsDataURL(file);
+
+        }
+    );
+
+}
+
+
+/* ======================================================
+   CONNEXION
+====================================================== */
+
+async function loginSchoolAccount(){
+
+    const school =
+        val('loginSchool');
+
+    const password =
+        val('loginPassword');
+
+
+    if(!school || !password){
+
+        $('loginMsg').textContent =
+            'Entrez le nom de l’établissement et le mot de passe.';
+
+        return;
+
+    }
+
+
+    $('loginMsg').textContent =
+        'Vérification...';
+
+
+    const passwordHash =
+        await hashPassword(password);
+
+
+    const accounts =
+        getAccounts();
+
+
+    const account =
+        accounts.find(
+            a =>
+            a.school.toLowerCase() ===
+            school.toLowerCase() &&
+            a.passwordHash === passwordHash
+        );
+
+
+    if(!account){
+
+        $('loginMsg').textContent =
+            'Nom de l’établissement ou mot de passe incorrect.';
+
+        return;
+
+    }
+
+
+    setCurrentAccount(account);
+
+
+    $('accountGate').style.display =
+        'none';
+
+
+    loadAccount();
+
+}
+
+
+/* ======================================================
+   CHARGEMENT ECOLE
+====================================================== */
+
+function loadAccount(){
+
+    const account =
+        getCurrentAccount();
+
+
+    if(!account){
+
+        showLogin();
+
+        return;
+
+    }
+
+
+    $('loggedUser').textContent =
+        `${account.first} ${account.last} — ${account.school}`;
+
+
+    $('school').value =
+        account.school;
+
+
+    $('rSchool').textContent =
+        account.school;
+
+
+    $('rSchoolID').textContent =
+        account.id;
+
+
+    if(account.logo){
+
+        $('rLogo').src =
+            account.logo;
+
+    }else{
+
+        $('rLogo').style.display =
+            'none';
+
+    }
+
+
+    renderPayments();
+
+    renderList();
+
+}
+
+
+/* ======================================================
+   DECONNEXION
+====================================================== */
+
+function logout(){
+
+    if(
+        confirm(
+            'Se déconnecter de cet établissement ?'
+        )
+    ){
+
+        clearCurrentAccount();
+
+        $('loggedUser').textContent =
+            '';
+
+        $('accountGate').style.display =
+            'flex';
+
+        $('loginSchool').value =
+            '';
+
+        $('loginPassword').value =
+            '';
+
+        showLogin();
+
+    }
+
+}
+
+
+/* ======================================================
+   ACTUALISATION
+====================================================== */
+
+function refreshApplication(){
+
+    /*
+       Recharge uniquement l'application.
+       Aucun localStorage n'est supprimé.
+    */
+
+    window.location.reload();
+
+}
+
+
+/* ======================================================
+   NUMERO DE RECU
+====================================================== */
+
+function nextNo(){
+
+    const key =
+        schoolKey('receiptCounter');
+
+
+    let n =
+        Number(
+            localStorage.getItem(key) || 0
+        ) + 1;
+
+
+    localStorage.setItem(
+        key,
+        n
+    );
+
+
+    return 'DEMO-' +
+        String(n).padStart(6,'0');
+
+}
+
+
+/* ======================================================
+   GENERER RECU
+====================================================== */
+
+function generate(){
+
+    const account =
+        getCurrentAccount();
+
+
+    if(!account){
+
+        alert(
+            'Veuillez vous connecter à votre établissement.'
+        );
+
+        return;
+
+    }
+
+
+    const data = {
+
+        no:
+            nextNo(),
+
+        date:
+            new Date()
+            .toLocaleString('fr-FR'),
+
+        school:
+            val('school'),
+
+        student:
+            val('student'),
+
+        classe:
+            val('classe'),
+
+        section:
+            val('section'),
+
+        year:
+            val('year'),
+
+        parent:
+            val('parent'),
+
+        parentPhone:
+            val('parentPhone'),
+
+        motive:
+            val('motive'),
+
+        amount:
+            val('amount'),
+
+        currency:
+            val('currency'),
+
+        method:
+            val('method')
+
+    };
+
+
+    if(!data.student){
+
+        alert(
+            'Saisissez le nom de l’étudiant.'
+        );
+
+        return;
+
+    }
+
+
+    $('rSchool').textContent =
+        data.school;
+
+    $('rSchoolID').textContent =
+        account.id;
+
+    $('rNo').textContent =
+        data.no;
+
+    $('rDate').textContent =
+        data.date;
+
+    $('rStudent').textContent =
+        data.student || '—';
+
+    $('rClasse').textContent =
+        data.classe || '—';
+
+    $('rSection').textContent =
+        data.section || '—';
+
+    $('rYear').textContent =
+        data.year || '—';
+
+    $('rParent').textContent =
+        data.parent || '—';
+
+    $('rParentPhone').textContent =
+        data.parentPhone || '—';
+
+    $('rMotive').textContent =
+        data.motive || '—';
+
+    $('rMethod').textContent =
+        data.method || '—';
+
+    $('rAmount').textContent =
+        money(data.amount) +
+        ' ' +
+        data.currency;
+
+
+    const file =
+        $('photo').files[0];
+
+
+    if(file){
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            e =>
+            $('rPhoto').src =
+                e.target.result;
+
+
+        reader.readAsDataURL(file);
+
+    }
+
+
+    const key =
+        schoolKey('receipts');
+
+
+    let arr =
+        JSON.parse(
+            localStorage.getItem(key) ||
+            '[]'
+        );
+
+
+    arr.unshift(data);
+
+
+    localStorage.setItem(
+        key,
+        JSON.stringify(arr)
+    );
+
+
+    renderList();
+
+}
+
+
+/* ======================================================
+   LISTE REÇUS
+====================================================== */
+
+function renderList(){
+
+    const key =
+        schoolKey('receipts');
+
+
+    if(!key){
+
+        $('list').innerHTML =
+            '<small>Aucune école connectée.</small>';
+
+        return;
+
+    }
+
+
+    let arr =
+        JSON.parse(
+            localStorage.getItem(key) ||
+            '[]'
+        );
+
+
+    $('list').innerHTML =
+        arr.map(
+            (x,i) => `
+
+            <div
+                class="item"
+                onclick="show(${i})">
+
+                <b>
+                    ${escapeHTML(x.no)}
+                </b>
+
+                —
+                
+                ${escapeHTML(x.student)}
+
+                <br>
+
+                <small>
+                    ${escapeHTML(x.motive)}
+                    ·
+                    ${money(x.amount)}
+                    ${escapeHTML(x.currency)}
+                </small>
+
+            </div>
+
+            `
+        ).join('')
+
+        ||
+
+        '<small>Aucune preuve enregistrée.</small>';
+
+}
+
+
+/* ======================================================
+   AFFICHER RECU
+====================================================== */
+
+function show(i){
+
+    const key =
+        schoolKey('receipts');
+
+
+    if(!key)return;
+
+
+    const arr =
+        JSON.parse(
+            localStorage.getItem(key) ||
+            '[]'
+        );
+
+
+    const x =
+        arr[i];
+
+
+    if(!x)return;
+
+
+    $('rSchool').textContent =
+        x.school || 'ÉTABLISSEMENT SCOLAIRE';
+
+    $('rNo').textContent =
+        x.no || '—';
+
+    $('rDate').textContent =
+        x.date || '—';
+
+    $('rStudent').textContent =
+        x.student || '—';
+
+    $('rClasse').textContent =
+        x.classe || '—';
+
+    $('rSection').textContent =
+        x.section || '—';
+
+    $('rYear').textContent =
+        x.year || '—';
+
+    $('rParent').textContent =
+        x.parent || '—';
+
+    $('rParentPhone').textContent =
+        x.parentPhone || '—';
+
+    $('rMotive').textContent =
+        x.motive || '—';
+
+    $('rMethod').textContent =
+        x.method || '—';
+
+    $('rAmount').textContent =
+        money(x.amount) +
+        ' ' +
+        x.currency;
+
+}
+
+
+/* ======================================================
+   EFFACEMENT
+====================================================== */
+
+function clearAll(){
+
+    const key =
+        schoolKey('receipts');
+
+
+    if(!key)return;
+
+
+    if(
+        confirm(
+            'Effacer toutes les preuves de CET établissement ?'
+        )
+    ){
+
+        localStorage.removeItem(key);
+
+        localStorage.removeItem(
+            schoolKey('receiptCounter')
+        );
+
+        renderList();
+
+    }
+
+}
+
+
+/* ======================================================
+   WHATSAPP
+====================================================== */
+
+function receiptMessage(){
+
+    return `Bonjour, voici la preuve de paiement scolaire de ${$('rStudent').textContent}.
+Établissement : ${$('rSchool').textContent}
+Classe : ${$('rClasse').textContent}
+Motif : ${$('rMotive').textContent}
+Montant : ${$('rAmount').textContent}
+N° reçu : ${$('rNo').textContent}`;
+
+}
+
+
+function parentWhatsApp(){
+
+    return val('parentPhone')
+        .replace(/[^0-9+]/g,'')
+        .replace(/^\+/,'');
+
+}
+
+
+function shareWhatsApp(){
+
+    const phone =
+        parentWhatsApp();
+
+
+    if(!phone){
+
+        alert(
+            'Insérez le numéro WhatsApp du parent / responsable.'
+        );
+
+        return;
+
+    }
+
+
+    const url =
+        `https://wa.me/${phone}?text=${encodeURIComponent(receiptMessage())}`;
+
+
+    window.open(
+        url,
+        '_blank'
+    );
+
+}
+
+
+/* ======================================================
+   EMAIL
+====================================================== */
+
+function shareEmail(){
+
+    const account =
+        getCurrentAccount();
+
+
+    const email =
+        account
+        ? account.email
+        : '';
+
+
+    if(!email){
+
+        alert(
+            'Aucune adresse e-mail disponible.'
+        );
+
+        return;
+
+    }
+
+
+    const subject =
+        `Preuve de paiement — ${$('rStudent').textContent}`;
+
+
+    const body =
+        receiptMessage() +
+        `
+
+La preuve complète peut être imprimée depuis l'application.`;
+
+
+    window.location.href =
+        `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+
+}
+
+
+/* ======================================================
+   PAIEMENTS
+====================================================== */
+
+const defaultPayments = [
+
+    "Frais d'inscription / admission",
+    "Frais scolaires",
+    "Frais de mensualité",
+    "Frais de bulletin",
+    "Frais d'examen",
+    "Frais de réinscription",
+    "Frais de transport scolaire",
+    "Frais de cantine",
+    "Frais d'uniforme",
+    "Frais d'activités scolaires",
+    "Frais de documents scolaires",
+    "Autre"
+
+];
+
+
+function payments(){
+
+    const key =
+        schoolKey('paymentCatalog');
+
+
+    if(!key){
+
+        return [...defaultPayments];
+
+    }
+
+
+    let a =
+        JSON.parse(
+            localStorage.getItem(key) ||
+            'null'
+        );
+
+
+    if(!a){
+
+        a =
+            [...defaultPayments];
+
+
+        localStorage.setItem(
+            key,
+            JSON.stringify(a)
+        );
+
+    }
+
+
+    return a;
+
+}
+
+
+/* ======================================================
+   AFFICHER PAIEMENTS
+====================================================== */
+
+function renderPayments(){
+
+    const a =
+        payments();
+
+
+    $('motive').innerHTML =
+        a.map(
+            x =>
+            `<option value="${escapeHTML(x)}">
+                ${escapeHTML(x)}
+            </option>`
+        ).join('');
+
+
+    $('paymentCatalog').innerHTML =
+        a.map(
+            (x,i) => `
+
+            <div class="catalogItem">
+
+                <span>
+                    ${escapeHTML(x)}
+                </span>
+
+                <button
+                    onclick="removePayment(${i})">
+
+                    Supprimer
+
+                </button>
+
+            </div>
+
+            `
+        ).join('');
+
+}
+
+
+/* ======================================================
+   AJOUT PAIEMENT
+====================================================== */
+
+function addPayment(){
+
+    const x =
+        $('newPayment')
+        .value
+        .trim();
+
+
+    if(!x)return;
+
+
+    const key =
+        schoolKey('paymentCatalog');
+
+
+    if(!key)return;
+
+
+    const a =
+        payments();
+
+
+    if(!a.includes(x)){
+
+        a.push(x);
+
+    }
+
+
+    localStorage.setItem(
+        key,
+        JSON.stringify(a)
+    );
+
+
+    $('newPayment').value =
+        '';
+
+
+    renderPayments();
+
+}
+
+
+/* ======================================================
+   SUPPRIMER PAIEMENT
+====================================================== */
+
+function removePayment(i){
+
+    const key =
+        schoolKey('paymentCatalog');
+
+
+    if(!key)return;
+
+
+    const a =
+        payments();
+
+
+    a.splice(i,1);
+
+
+    localStorage.setItem(
+        key,
+        JSON.stringify(a)
+    );
+
+
+    renderPayments();
+
+}
+
+
+/* ======================================================
+   PARAMETRES
+====================================================== */
+
+function toggleSettings(){
+
+    $('settingsPanel')
+        .classList
+        .toggle('open');
+
+    renderPayments();
+
+}
+
+
+/* ======================================================
+   AFFICHAGE CREATION
+====================================================== */
+
+function showCreate(){
+
+    $('loginBox')
+        .classList
+        .remove('active');
+
+    $('createBox')
+        .classList
+        .remove('hidden');
+
+    $('loginMsg').textContent =
+        '';
+
+}
+
+
+/* ======================================================
+   AFFICHAGE CONNEXION
+====================================================== */
+
+function showLogin(){
+
+    $('createBox')
+        .classList
+        .add('hidden');
+
+    $('loginBox')
+        .classList
+        .add('active');
+
+}
+
+
+/* ======================================================
+   INITIALISATION
+====================================================== */
+
+$('rDate').textContent =
+    new Date()
+    .toLocaleString('fr-FR');
+
+
+if(getCurrentAccount()){
+
+    $('accountGate').style.display =
+        'none';
+
+    loadAccount();
+
+}else{
+
+    $('accountGate').style.display =
+        'flex';
+
+    showLogin();
+
+}
+
+</script>
+
+</body>
+</html>
